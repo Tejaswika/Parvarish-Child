@@ -1,19 +1,19 @@
 // ignore_for_file: avoid_unnecessary_containers, prefer_const_constructors, unused_import
 
 import 'package:child/screens/MyNavPill.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:child/screens/SelectChild.dart';
 import 'package:child/screens/SignUp_Screen.dart';
-import 'package:child/screens/forgot_password.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
-
   @override
   State<LoginPage> createState() => _LoginPage();
 }
 
 class _LoginPage extends State<LoginPage> {
+  late String _email, _password;
+  final auth = FirebaseAuth.instance;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -47,9 +47,16 @@ class _LoginPage extends State<LoginPage> {
                     Container(
                       padding: EdgeInsets.all(30),
                       child: TextField(
+                        keyboardType: TextInputType.emailAddress,
                         decoration: InputDecoration(
-                          hintText: 'Register Email Address',
+                          prefixIcon: Icon(Icons.mail),
+                          hintText: 'Email',
                         ),
+                        onChanged: (value) {
+                          setState(() {
+                            _email = value.trim();
+                          });
+                        },
                       ),
                     ),
                     Container(
@@ -57,8 +64,13 @@ class _LoginPage extends State<LoginPage> {
                       child: TextField(
                         obscureText: true, //password stays hidden
                         decoration: InputDecoration(
-                          hintText: 'Child Unique ID',
-                        ),
+                            hintText: 'Password',
+                            prefixIcon: Icon(Icons.key_outlined)),
+                        onChanged: (value) {
+                          setState(() {
+                            _password = value.trim();
+                          });
+                        },
                       ),
                     ),
                     Padding(
@@ -67,10 +79,14 @@ class _LoginPage extends State<LoginPage> {
                         minWidth: double.infinity,
                         height: 50,
                         onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => MyNavPill()));
+                          auth
+                              .signInWithEmailAndPassword(
+                                  email: _email, password: _password)
+                              .then((_) {
+                            Navigator.of(context).pushReplacement(
+                                MaterialPageRoute(
+                                    builder: (context) => MyNavPill()));
+                          });
                         },
                         color: const Color.fromARGB(255, 116, 49, 128),
                         shape: RoundedRectangleBorder(
@@ -89,6 +105,30 @@ class _LoginPage extends State<LoginPage> {
                       //giave space between 2 boxes
                       height: 20,
                     ),
+                    Container(
+                      padding: EdgeInsets.only(left: 25),
+                      child: Row(
+                        children: [
+                          Container(
+                              child: Text(
+                            'Don\'t have an account?',
+                            style: TextStyle(color: Colors.white, fontSize: 12),
+                          )),
+                          TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => SignUpPage()));
+                              },
+                              child: Text(
+                                'Sign Up',
+                                style: TextStyle(
+                                    fontSize: 16, color: Colors.white),
+                              )),
+                        ],
+                      ),
+                    )
                   ]),
                 )),
               )
