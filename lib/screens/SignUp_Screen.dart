@@ -1,8 +1,12 @@
 import 'package:child/screens/MyNavPill.dart';
+import 'package:child/screens/UseID.dart';
 import 'package:child/screens/login_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:child/screens/SignUp_Screen.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:child/constants/db_constants.dart';
 
 class SignUpPage extends StatefulWidget {
   @override
@@ -10,8 +14,32 @@ class SignUpPage extends StatefulWidget {
 }
 
 class _SignUpPage extends State<SignUpPage> {
-  late String _email, _password;
+  late String _email, _password, _class, _age, _phone, _name;
   final auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  // Creating a reference to the collection
+  late final CollectionReference _childCollection =
+      _firestore.collection(DBConstants.childCollectionName);
+  void _createDocument(uid, name, email, phone, _class, age) async {
+    // Creating a document to Store Data To
+    DocumentReference documentReferencer = _childCollection.doc(uid);
+
+    // Creating data to be stored
+    Map<String, dynamic> data = <String, dynamic>{
+      "class": _class,
+      "age": age,
+      "email": email,
+      "name": name,
+      "phone": phone,
+    };
+
+    // Pushing data to the document
+    await documentReferencer
+        .set(data)
+        .whenComplete(() => print("Notes item added to the database"))
+        .catchError((e) => print(e));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -46,6 +74,21 @@ class _SignUpPage extends State<SignUpPage> {
                     Container(
                       padding: EdgeInsets.all(30),
                       child: TextField(
+                        keyboardType: TextInputType.name,
+                        decoration: InputDecoration(
+                          prefixIcon: Icon(Icons.abc),
+                          hintText: ' Name',
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            _name = value.trim();
+                          });
+                        },
+                      ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.all(30),
+                      child: TextField(
                         keyboardType: TextInputType.emailAddress,
                         decoration: InputDecoration(
                           prefixIcon: Icon(Icons.mail),
@@ -54,6 +97,51 @@ class _SignUpPage extends State<SignUpPage> {
                         onChanged: (value) {
                           setState(() {
                             _email = value.trim();
+                          });
+                        },
+                      ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.all(30),
+                      child: TextField(
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          prefixIcon: Icon(Icons.numbers),
+                          hintText: 'Age',
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            _age = value.trim();
+                          });
+                        },
+                      ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.all(30),
+                      child: TextField(
+                        keyboardType: TextInputType.number,
+                        decoration: InputDecoration(
+                          prefixIcon: Icon(Icons.school),
+                          hintText: 'Class',
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            _class = value.trim();
+                          });
+                        },
+                      ),
+                    ),
+                    Container(
+                      padding: EdgeInsets.all(30),
+                      child: TextField(
+                        keyboardType: TextInputType.phone,
+                        decoration: InputDecoration(
+                          prefixIcon: Icon(Icons.phone),
+                          hintText: 'Phone No.',
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            _phone = value.trim();
                           });
                         },
                       ),
@@ -81,10 +169,13 @@ class _SignUpPage extends State<SignUpPage> {
                           auth
                               .createUserWithEmailAndPassword(
                                   email: _email, password: _password)
-                              .then((_) {
+                              .then((UserCredential userCredential) {
                             Navigator.of(context).pushReplacement(
                                 MaterialPageRoute(
-                                    builder: (context) => LoginPage()));
+                                    builder: (context) => ChildID(
+                                        uid: userCredential.user?.uid)));
+                            _createDocument(userCredential.user?.uid, _name,
+                                _email, _phone, _class, _age);
                           });
                         },
                         color: const Color.fromARGB(255, 116, 49, 128),

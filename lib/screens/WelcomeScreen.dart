@@ -101,6 +101,26 @@ class WelcomeScreen extends StatelessWidget {
                     SizedBox(
                       height: 20,
                     ),
+                    MaterialButton(
+                      minWidth: double.infinity,
+                      height: 60,
+                      onPressed: () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: ((context) => SignUpPage())));
+                      },
+                      color: Color(0xff0095ff),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(50)),
+                      child: Text(
+                        'Sign up',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                            fontSize: 18),
+                      ),
+                    )
                   ],
                 )
               ],
