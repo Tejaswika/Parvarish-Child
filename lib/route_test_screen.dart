@@ -58,7 +58,7 @@ class RouteTestScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(16),
                   color: Colors.red,
                   child: const Text(
-                    'Welcome Page',
+                    'app usage',
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
