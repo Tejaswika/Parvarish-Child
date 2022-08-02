@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:child/screens/WelcomeScreen.dart';
+import 'package:child/screens/app_ussage.dart';
 
 class RouteTestScreen extends StatelessWidget {
   const RouteTestScreen({Key? key}) : super(key: key);
@@ -29,6 +30,27 @@ class RouteTestScreen extends StatelessWidget {
                     context,
                     MaterialPageRoute(
                       builder: (context) => const WelcomeScreen(),
+                    ),
+                  );
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  color: Colors.red,
+                  child: const Text(
+                    'Welcome Page',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AppUssage(),
                     ),
                   );
                 },
