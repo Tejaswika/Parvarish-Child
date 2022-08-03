@@ -21,6 +21,8 @@ class _SignUpPage extends State<SignUpPage> {
   // Creating a reference to the collection
   late final CollectionReference _childCollection =
       _firestore.collection(DBConstants.childCollectionName);
+
+      
   void _createDocument(uid, name, email, phone, _class, age) async {
     // Creating a document to Store Data To
     DocumentReference documentReferencer = _childCollection.doc(uid);

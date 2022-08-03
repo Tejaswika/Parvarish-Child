@@ -16,32 +16,47 @@ class _FirstScreen extends State<FirstScreen> {
     super.initState();
   }
 
-  void getUsageStats() async {
+  void getUsageStats(List<Application> installedApps) async {
+    final List<String> installAppPackageNames = [];
+    installedApps.forEach((app) => installAppPackageNames.add(app.packageName));
     try {
-      DateTime endDate = new DateTime.now();
-      DateTime startDate = endDate.subtract(Duration(hours: 1));
-      List<AppUsageInfo> infoList =
-          await AppUsage.getAppUsage(startDate, endDate);
-      setState(() {
-        _infos = infoList;
-      });
+      DateTime endDate = DateTime(DateTime.now().year, DateTime.now().month,
+          DateTime.now().day);
+      DateTime startDateToday = endDate.subtract(const Duration(days: 1));
+      int currentWeekDay = DateTime.now().weekday;
 
-      for (var info in infoList) {
-        print(info.toString());
-      }
+      // Getting App usage stats for current Day
+      List<AppUsageInfo> infoListForToday =
+          await AppUsage.getAppUsage(startDateToday, endDate);
+
+      // Getting App usage stats for current Week
+      List<AppUsageInfo> infoListForWeek = await AppUsage.getAppUsage(
+          endDate.subtract(Duration(days: currentWeekDay - 1)), endDate);
+
+      // Getting App usage stats for current Month
+      List<AppUsageInfo> infoListForMonth = await AppUsage.getAppUsage(
+          endDate.subtract(Duration(days: DateTime.now().day-1)), endDate);
+
+      // Filtering app usage stats for getting only externally installed apps
+      infoListForToday.where(
+          (element) => installAppPackageNames.contains(element.packageName));
+      infoListForWeek.where(
+          (element) => installAppPackageNames.contains(element.packageName));
+      infoListForMonth.where(
+      (element) => installAppPackageNames.contains(element.packageName));
+      
     } on AppUsageException catch (exception) {
       print(exception);
     }
   }
 
-  Future<void> getApp() async {
-    List _apps = await DeviceApps.getInstalledApplications();
+  Future<void> getInstalledApps() async {
+    List<Application> _apps = await DeviceApps.getInstalledApplications();
 
-    setState(() {
-      apps = _apps;
-    });
+    getUsageStats(_apps);
   }
- @override
+
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       home: Scaffold(
@@ -57,9 +72,8 @@ class _FirstScreen extends State<FirstScreen> {
                   trailing: Text(_infos[index].usage.toString()));
             }),
         floatingActionButton: FloatingActionButton(
-            onPressed: getUsageStats, child: Icon(Icons.file_download)),
+            onPressed: getInstalledApps, child: Icon(Icons.file_download)),
       ),
     );
   }
-
 }

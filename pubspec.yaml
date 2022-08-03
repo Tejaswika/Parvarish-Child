@@ -34,7 +34,8 @@ dependencies:
   carousel_slider: ^3.0.0
   cupertino_icons: ^1.0.0
   # Firebase Database
-  cloud_firestore: ^3.4.2
+  cloud_firestore: ^3.4.3
+  cloud_firestore_web: ^2.8.3
   # Firebase Authentication
   firebase_auth: ^3.6.1
   firebase_core: ^1.20.0
