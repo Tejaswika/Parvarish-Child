@@ -7,6 +7,9 @@ import 'package:flutter/material.dart';
 import 'package:child/screens/SignUp_Screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:child/constants/db_constants.dart';
+import 'package:device_apps/device_apps.dart';
+import 'dart:async';
+import 'package:app_usage/app_usage.dart';
 
 class SignUpPage extends StatefulWidget {
   @override
@@ -22,25 +25,94 @@ class _SignUpPage extends State<SignUpPage> {
   late final CollectionReference _childCollection =
       _firestore.collection(DBConstants.childCollectionName);
 
-      
-  void _createDocument(uid, name, email, phone, _class, age) async {
-    // Creating a document to Store Data To
-    DocumentReference documentReferencer = _childCollection.doc(uid);
+  late List<AppUsageInfo> infoListForToday;
+  late List<AppUsageInfo> infoListForWeek;
+  late List<AppUsageInfo> infoListForMonth;
 
-    // Creating data to be stored
-    Map<String, dynamic> data = <String, dynamic>{
-      "class": _class,
-      "age": age,
-      "email": email,
-      "name": name,
-      "phone": phone,
-    };
+  void initState() {
+    getInstalledApps();
+    super.initState();
+  }
 
-    // Pushing data to the document
-    await documentReferencer
-        .set(data)
-        .whenComplete(() => print("Notes item added to the database"))
-        .catchError((e) => print(e));
+  Map<String, dynamic> formatAppStats() {
+    Map<String, dynamic> _appStats = {};
+    infoListForToday.forEach((app) {
+      _appStats[app.packageName] = {
+        "current_day_screen_time": app.usage.inMinutes,
+        "app_name": app.appName
+      };
+    });
+    infoListForWeek.forEach((app) {
+      if (_appStats[app.packageName] == null) {
+        _appStats[app.packageName] = {
+          "current_day_screen_time": 0,
+          "app_name": app.appName
+        };
+      }
+
+      _appStats[app.packageName]["current_week_screen_time"] =
+          app.usage.inMinutes;
+    });
+    infoListForMonth.forEach((app) {
+      if (_appStats[app.packageName] == null) {
+        _appStats[app.packageName] = {
+          "current_day_screen_time": 0,
+          "current_week_screen_time": 0,
+          "app_name":app.appName
+        };
+      }
+      _appStats[app.packageName]["current_month_screen_time"] =
+          app.usage.inMinutes;
+    });
+
+    return _appStats;
+  }
+
+  void getUsageStats(List<Application> installedApps) async {
+    final List<String> installAppPackageNames = [];
+    installedApps.forEach((app) => installAppPackageNames.add(app.packageName));
+
+    try {
+      DateTime endDate = DateTime(
+          DateTime.now().year, DateTime.now().month, DateTime.now().day);
+      DateTime startDateToday = endDate.subtract(const Duration(days: 1));
+      int currentWeekDay = DateTime.now().weekday;
+
+
+      // Getting App usage stats for current Day
+      infoListForToday = await AppUsage.getAppUsage(startDateToday, endDate);
+
+      // Getting App usage stats for current Week
+      infoListForWeek = await AppUsage.getAppUsage(
+          endDate.subtract(Duration(days: currentWeekDay - 1)), endDate);
+
+      // Getting App usage stats for current Month
+      infoListForMonth = await AppUsage.getAppUsage(
+          endDate.subtract(Duration(days: DateTime.now().day - 1)), endDate);
+
+      // Filtering app usage stats for getting only externally installed apps
+      infoListForToday = infoListForToday
+          .where(
+              (element) => installAppPackageNames.contains(element.packageName))
+          .toList();
+
+      infoListForWeek = infoListForWeek
+          .where(
+              (element) => installAppPackageNames.contains(element.packageName))
+          .toList();
+      infoListForMonth = infoListForMonth
+          .where(
+              (element) => installAppPackageNames.contains(element.packageName))
+          .toList();
+    } on AppUsageException catch (exception) {
+      print(exception);
+    }
+  }
+
+  Future<void> getInstalledApps() async {
+    List<Application> _apps = await DeviceApps.getInstalledApplications();
+
+    getUsageStats(_apps);
   }
 
   @override
@@ -168,17 +240,7 @@ class _SignUpPage extends State<SignUpPage> {
                         minWidth: double.infinity,
                         height: 50,
                         onPressed: () {
-                          auth
-                              .createUserWithEmailAndPassword(
-                                  email: _email, password: _password)
-                              .then((UserCredential userCredential) {
-                            Navigator.of(context).pushReplacement(
-                                MaterialPageRoute(
-                                    builder: (context) => ChildID(
-                                        uid: userCredential.user?.uid)));
-                            _createDocument(userCredential.user?.uid, _name,
-                                _email, _phone, _class, _age);
-                          });
+                          _signUp();
                         },
                         color: const Color.fromARGB(255, 116, 49, 128),
                         shape: RoundedRectangleBorder(
@@ -227,5 +289,47 @@ class _SignUpPage extends State<SignUpPage> {
             ],
           )),
     );
+  }
+
+  void _signUp() {
+    auth
+        .createUserWithEmailAndPassword(email: _email, password: _password)
+        .then((UserCredential userCredential) {
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) => ChildID(uid: userCredential.user?.uid)));
+      _createDocument(
+          userCredential.user?.uid, _name, _email, _phone, _class, _age);
+    });
+  }
+
+  void _createDocument(
+    uid,
+    name,
+    email,
+    phone,
+    _class,
+    age,
+  ) async {
+    // Creating a document to Store Data To
+    DocumentReference documentReferencer = _childCollection.doc(uid);
+
+    Map<String, dynamic> childAppStats = formatAppStats();
+
+    // Creating data to be stored
+
+    Map<String, dynamic> data = <String, dynamic>{
+      "class": _class,
+      "apps": childAppStats,
+      "age": age,
+      "email": email,
+      "name": name,
+      "phone": phone,
+    };
+
+    // Pushing data to the document
+    await documentReferencer
+        .set(data)
+        .whenComplete(() => print("Notes item added to the database"))
+        .catchError((e) => print(e));
   }
 }

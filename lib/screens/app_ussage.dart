@@ -1,79 +1,87 @@
-import 'package:flutter/material.dart';
-import 'package:device_apps/device_apps.dart';
-import 'dart:async';
-import 'package:app_usage/app_usage.dart';
+// import 'package:flutter/material.dart';
+// import 'package:device_apps/device_apps.dart';
+// import 'dart:async';
+// import 'package:app_usage/app_usage.dart';
 
-class FirstScreen extends StatefulWidget {
-  State<StatefulWidget> createState() {
-    return _FirstScreen();
-  }
-}
+// class FirstScreen extends StatefulWidget {
+//   State<StatefulWidget> createState() {
+//     return _FirstScreen();
+//   }
+// }
 
-class _FirstScreen extends State<FirstScreen> {
-  List apps = [];
-  List<AppUsageInfo> _infos = [];
-  void initState() {
-    super.initState();
-  }
+// class _FirstScreen extends State<FirstScreen> {
+//   List apps = [];
 
-  void getUsageStats(List<Application> installedApps) async {
-    final List<String> installAppPackageNames = [];
-    installedApps.forEach((app) => installAppPackageNames.add(app.packageName));
-    try {
-      DateTime endDate = DateTime(DateTime.now().year, DateTime.now().month,
-          DateTime.now().day);
-      DateTime startDateToday = endDate.subtract(const Duration(days: 1));
-      int currentWeekDay = DateTime.now().weekday;
+//   late List<AppUsageInfo> infoListForToday;
+//   late List<AppUsageInfo> infoListForWeek;
+//   late List<AppUsageInfo> infoListForMonth;
 
-      // Getting App usage stats for current Day
-      List<AppUsageInfo> infoListForToday =
-          await AppUsage.getAppUsage(startDateToday, endDate);
+//   void initState() {
+//     getInstalledApps();
+//     super.initState();
+//   }
 
-      // Getting App usage stats for current Week
-      List<AppUsageInfo> infoListForWeek = await AppUsage.getAppUsage(
-          endDate.subtract(Duration(days: currentWeekDay - 1)), endDate);
+ 
+//   void getUsageStats(List<Application> installedApps) async {
+//     final List<String> installAppPackageNames = [];
+//     installedApps.forEach((app) => installAppPackageNames.add(app.packageName));
 
-      // Getting App usage stats for current Month
-      List<AppUsageInfo> infoListForMonth = await AppUsage.getAppUsage(
-          endDate.subtract(Duration(days: DateTime.now().day-1)), endDate);
+//     try {
+//       DateTime endDate = DateTime(
+//           DateTime.now().year, DateTime.now().month, DateTime.now().day);
+//       DateTime startDateToday = endDate.subtract(const Duration(days: 1));
+//       int currentWeekDay = DateTime.now().weekday;
 
-      // Filtering app usage stats for getting only externally installed apps
-      infoListForToday.where(
-          (element) => installAppPackageNames.contains(element.packageName));
-      infoListForWeek.where(
-          (element) => installAppPackageNames.contains(element.packageName));
-      infoListForMonth.where(
-      (element) => installAppPackageNames.contains(element.packageName));
-      
-    } on AppUsageException catch (exception) {
-      print(exception);
-    }
-  }
+//       // Getting App usage stats for current Day
+//       infoListForToday = await AppUsage.getAppUsage(startDateToday, endDate);
+//       print(infoListForToday);
 
-  Future<void> getInstalledApps() async {
-    List<Application> _apps = await DeviceApps.getInstalledApplications();
+//       // Getting App usage stats for current Week
+//       infoListForWeek = await AppUsage.getAppUsage(
+//           endDate.subtract(Duration(days: currentWeekDay - 1)), endDate);
 
-    getUsageStats(_apps);
-  }
+//       // Getting App usage stats for current Month
+//       infoListForMonth = await AppUsage.getAppUsage(
+//           endDate.subtract(Duration(days: DateTime.now().day - 1)), endDate);
 
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('App Usage Example'),
-          backgroundColor: Colors.green,
-        ),
-        body: ListView.builder(
-            itemCount: _infos.length,
-            itemBuilder: (context, index) {
-              return ListTile(
-                  title: Text(_infos[index].appName),
-                  trailing: Text(_infos[index].usage.toString()));
-            }),
-        floatingActionButton: FloatingActionButton(
-            onPressed: getInstalledApps, child: Icon(Icons.file_download)),
-      ),
-    );
-  }
-}
+//       // Filtering app usage stats for getting only externally installed apps
+//       infoListForToday.where(
+//           (element) => installAppPackageNames.contains(element.packageName));
+//       print(infoListForToday);
+
+//       infoListForWeek.where(
+//           (element) => installAppPackageNames.contains(element.packageName));
+//       infoListForMonth.where(
+//           (element) => installAppPackageNames.contains(element.packageName));
+//     } on AppUsageException catch (exception) {
+//       print(exception);
+//     }
+//   }
+
+//   Future<void> getInstalledApps() async {
+//     List<Application> _apps = await DeviceApps.getInstalledApplications();
+
+//     getUsageStats(_apps);
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       home: Scaffold(
+//         appBar: AppBar(
+//           title: const Text('App Usage Example'),
+//           backgroundColor: Colors.green,
+//         ),
+//         body: ListView.builder(
+//             itemCount: _infos.length,
+//             itemBuilder: (context, index) {
+//               return ListTile(
+//                   title: Text(_infos[index].appName),
+//                   trailing: Text(_infos[index].usage.toString()));
+//             }),
+//         floatingActionButton: FloatingActionButton(
+//             onPressed: getInstalledApps, child: Icon(Icons.file_download)),
+//       ),
+//     );
+//   }
+// }
