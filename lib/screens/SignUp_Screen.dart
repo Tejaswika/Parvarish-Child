@@ -1,4 +1,6 @@
 import 'package:child/screens/MyNavPill.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:child/screens/UseID.dart';
 import 'package:child/screens/login_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -28,8 +30,17 @@ class _SignUpPage extends State<SignUpPage> {
   late List<AppUsageInfo> infoListForToday;
   late List<AppUsageInfo> infoListForWeek;
   late List<AppUsageInfo> infoListForMonth;
+  late String? fmcToken;
+  void getToken() async {
+    await FirebaseMessaging.instance.getToken().then((token) {
+      setState(() {
+        fmcToken = token;
+      });
+    });
+  }
 
   void initState() {
+    getToken();
     getInstalledApps();
     super.initState();
   }
@@ -58,7 +69,7 @@ class _SignUpPage extends State<SignUpPage> {
         _appStats[app.packageName] = {
           "current_day_screen_time": 0,
           "current_week_screen_time": 0,
-          "app_name":app.appName
+          "app_name": app.appName
         };
       }
       _appStats[app.packageName]["current_month_screen_time"] =
@@ -77,7 +88,6 @@ class _SignUpPage extends State<SignUpPage> {
           DateTime.now().year, DateTime.now().month, DateTime.now().day);
       DateTime startDateToday = endDate.subtract(const Duration(days: 1));
       int currentWeekDay = DateTime.now().weekday;
-
 
       // Getting App usage stats for current Day
       infoListForToday = await AppUsage.getAppUsage(startDateToday, endDate);
@@ -324,6 +334,7 @@ class _SignUpPage extends State<SignUpPage> {
       "email": email,
       "name": name,
       "phone": phone,
+      "fmcToken": fmcToken
     };
 
     // Pushing data to the document
