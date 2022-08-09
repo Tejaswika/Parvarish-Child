@@ -4,7 +4,7 @@ import 'package:child/screens/MyNavPill.dart';
 import 'package:child/screens/child_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:child/screens/SignUp_Screen.dart';
+import 'package:child/screens/signUp_screen.dart';
 
 class LoginPage extends StatefulWidget {
   @override
