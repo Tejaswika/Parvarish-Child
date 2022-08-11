@@ -66,7 +66,7 @@ class _ChildIDState extends State<ChildID> {
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                                  MyNavPill()));
+                                                  MyNavPill(uid: widget.uid,)));
                                     },
                                     child: Text(
                                       'Neha Singh',
@@ -80,7 +80,7 @@ class _ChildIDState extends State<ChildID> {
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                                  MyNavPill()));
+                                                  MyNavPill(uid:widget.uid)));
                                     },
                                     child: Text(
                                       widget.uid ?? '',

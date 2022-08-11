@@ -58,7 +58,7 @@ class _SignUpPage extends State<SignUpPage> {
         _appStats[app.packageName] = {
           "current_day_screen_time": 0,
           "current_week_screen_time": 0,
-          "app_name":app.appName
+          "app_name": app.appName
         };
       }
       _appStats[app.packageName]["current_month_screen_time"] =
@@ -77,7 +77,6 @@ class _SignUpPage extends State<SignUpPage> {
           DateTime.now().year, DateTime.now().month, DateTime.now().day);
       DateTime startDateToday = endDate.subtract(const Duration(days: 1));
       int currentWeekDay = DateTime.now().weekday;
-
 
       // Getting App usage stats for current Day
       infoListForToday = await AppUsage.getAppUsage(startDateToday, endDate);
