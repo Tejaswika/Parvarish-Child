@@ -76,11 +76,15 @@ class _ChildIDState extends State<ChildID> {
                                     )),
                                 TextButton(
                                     onPressed: () {
+<<<<<<< HEAD:lib/screens/UseID.dart
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
                                                   MyNavPill(uid:widget.uid)));
+=======
+                                      print(widget.uid);
+>>>>>>> 4499afc65c2b8fdf9446950c8ba2f56a661c9fbb:lib/screens/child_screen.dart
                                     },
                                     child: Text(
                                       widget.uid ?? '',
