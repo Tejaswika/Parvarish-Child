@@ -1,15 +1,17 @@
 import 'dart:math';
 
+import 'package:child/services/background_service.dart';
 import 'package:flutter/material.dart';
 import 'package:child/route_test_screen.dart';
 import 'package:child/screens/SignUp_Screen.dart';
-import 'package:child/screens/app_timer.dart';
 import 'package:child/screens/screentime.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import 'package:carousel_slider/carousel_slider.dart';
 
-void main() {
+import '../services/local_storage_service.dart';
+
+Future<void> main() async {
   runApp(MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData.dark().copyWith(
@@ -19,6 +21,8 @@ void main() {
         )),
       ),
       home: MyNavPill()));
+  LocalStorageService.init();
+  await initializeService();
 }
 
 //Store this globally

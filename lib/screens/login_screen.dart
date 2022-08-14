@@ -6,6 +6,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:child/screens/SignUp_Screen.dart';
 
+import '../services/local_storage_service.dart';
+
 class LoginPage extends StatefulWidget {
   @override
   State<LoginPage> createState() => _LoginPage();
@@ -84,6 +86,8 @@ class _LoginPage extends State<LoginPage> {
                               .signInWithEmailAndPassword(
                                   email: _email, password: _password)
                               .then((UserCredential userCredential) {
+                            LocalStorageService.setData(
+                                'UserId', userCredential.user?.uid ?? '');
                             Navigator.of(context).pushReplacement(
                                 MaterialPageRoute(
                                     builder: (context) => ChildID(

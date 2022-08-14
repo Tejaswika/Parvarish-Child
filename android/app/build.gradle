@@ -26,6 +26,7 @@ apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
     compileSdkVersion flutter.compileSdkVersion
 
     compileOptions {
@@ -45,6 +46,7 @@ android {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId "com.example.child"
         minSdkVersion 21
+        targetSdkVersion rootProject.ext.targetSdkVersion
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName

@@ -12,6 +12,7 @@ import 'package:child/constants/db_constants.dart';
 import 'package:device_apps/device_apps.dart';
 import 'dart:async';
 import 'package:app_usage/app_usage.dart';
+import 'package:child/services/local_storage_service.dart';
 
 class SignUpPage extends StatefulWidget {
   @override
@@ -305,6 +306,7 @@ class _SignUpPage extends State<SignUpPage> {
     auth
         .createUserWithEmailAndPassword(email: _email, password: _password)
         .then((UserCredential userCredential) {
+      LocalStorageService.setData('UserId', userCredential.user?.uid ?? '');
       Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (context) => ChildID(uid: userCredential.user?.uid)));
       _createDocument(
