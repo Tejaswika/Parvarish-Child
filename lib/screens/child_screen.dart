@@ -76,11 +76,7 @@ class _ChildIDState extends State<ChildID> {
                                     )),
                                 TextButton(
                                     onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) =>
-                                                  MyNavPill()));
+                                      print(widget.uid);
                                     },
                                     child: Text(
                                       widget.uid ?? '',

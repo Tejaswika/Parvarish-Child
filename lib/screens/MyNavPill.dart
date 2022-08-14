@@ -4,6 +4,7 @@ import 'package:child/services/background_service.dart';
 import 'package:flutter/material.dart';
 import 'package:child/route_test_screen.dart';
 import 'package:child/screens/SignUp_Screen.dart';
+import 'package:child/screens/app_timer.dart';
 import 'package:child/screens/screentime.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 

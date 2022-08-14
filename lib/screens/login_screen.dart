@@ -1,10 +1,10 @@
 // ignore_for_file: avoid_unnecessary_containers, prefer_const_constructors, unused_import
 
 import 'package:child/screens/MyNavPill.dart';
-import 'package:child/screens/UseID.dart';
+import 'package:child/screens/child_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:child/screens/SignUp_Screen.dart';
+import 'package:child/screens/signUp_screen.dart';
 
 import '../services/local_storage_service.dart';
 

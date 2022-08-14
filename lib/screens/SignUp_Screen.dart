@@ -1,26 +1,25 @@
-import 'package:child/screens/MyNavPill.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:child/screens/UseID.dart';
+import 'package:child/screens/child_screen.dart';
+import '../services/local_storage_service.dart';
 import 'package:child/screens/login_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:child/screens/SignUp_Screen.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:child/constants/db_constants.dart';
 import 'package:device_apps/device_apps.dart';
 import 'dart:async';
 import 'package:app_usage/app_usage.dart';
 import 'package:child/services/local_storage_service.dart';
+import '../services/snackbar_service.dart';
 
 class SignUpPage extends StatefulWidget {
+  const SignUpPage({Key? key}) : super(key: key);
   @override
   State<SignUpPage> createState() => _SignUpPage();
 }
 
 class _SignUpPage extends State<SignUpPage> {
-  late String _email, _password, _class, _age, _phone, _name;
+  late String _email, _password, _grade, _age, _phone, _name;
   final auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -211,7 +210,7 @@ class _SignUpPage extends State<SignUpPage> {
                         ),
                         onChanged: (value) {
                           setState(() {
-                            _class = value.trim();
+                            _grade = value.trim();
                           });
                         },
                       ),
@@ -310,18 +309,11 @@ class _SignUpPage extends State<SignUpPage> {
       Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (context) => ChildID(uid: userCredential.user?.uid)));
       _createDocument(
-          userCredential.user?.uid, _name, _email, _phone, _class, _age);
+          userCredential.user?.uid, _name, _email, _phone, _grade, _age);
     });
   }
 
-  void _createDocument(
-    uid,
-    name,
-    email,
-    phone,
-    _class,
-    age,
-  ) async {
+  void _createDocument(uid, name, email, phone, grade, age) async {
     // Creating a document to Store Data To
     DocumentReference documentReferencer = _childCollection.doc(uid);
 
@@ -330,7 +322,7 @@ class _SignUpPage extends State<SignUpPage> {
     // Creating data to be stored
 
     Map<String, dynamic> data = <String, dynamic>{
-      "class": _class,
+      "class": _grade,
       "apps": childAppStats,
       "age": age,
       "email": email,
@@ -340,9 +332,9 @@ class _SignUpPage extends State<SignUpPage> {
     };
 
     // Pushing data to the document
-    await documentReferencer
-        .set(data)
-        .whenComplete(() => print("Notes item added to the database"))
-        .catchError((e) => print(e));
+    await documentReferencer.set(data).onError((error, stackTrace) {
+      SnackbarService.showErrorSnackbar(
+          context, 'Some error occured!! Please try after some time.');
+    });
   }
 }
