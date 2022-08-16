@@ -10,11 +10,145 @@ class ChildID extends StatefulWidget {
 }
 
 class _ChildIDState extends State<ChildID> {
+  int _selected = 0;
+  void changeSelected(int index) {
+    setState(() {
+      _selected = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
           title: Text('Child ID'),
+        ),
+        drawer: Drawer(
+          child: ListView(
+            padding: EdgeInsets.zero,
+            // ignore: prefer_const_literals_to_create_immutables
+            children: [
+              const UserAccountsDrawerHeader(
+                decoration: BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage('images/bgDrawer.jpg'),
+                    fit: BoxFit.cover,
+                  ),
+                ),
+                accountName: Text('Neha Singh'),
+                accountEmail: Text('test@test.com'),
+                currentAccountPicture: CircleAvatar(
+                  backgroundColor: Colors.lightBlueAccent,
+                  child: Text(
+                    'NS',
+                    style: TextStyle(fontSize: 30),
+                  ),
+                ),
+              ),
+              ListTile(
+                selected: _selected == 0,
+                leading: const Icon(Icons.home),
+                title: const Text('Home'),
+                onTap: () {
+                  changeSelected(0);
+                },
+                trailing: const Icon(Icons.arrow_forward_ios_rounded),
+              ),
+              const Divider(
+                thickness: 1,
+                indent: 10,
+                endIndent: 10,
+              ),
+              ListTile(
+                selected: _selected == 1,
+                leading: const Icon(Icons.face),
+                title: const Text('My Profile'),
+                onTap: () {
+                  changeSelected(1);
+                },
+                trailing: const Icon(Icons.arrow_forward_ios_rounded),
+              ),
+              const Divider(
+                thickness: 1,
+                indent: 10,
+                endIndent: 10,
+              ),
+              ListTile(
+                selected: _selected == 2,
+                leading: const Icon(Icons.quiz),
+                title: const Text('Quiz'),
+                onTap: () {
+                  changeSelected(2);
+                },
+                trailing: const Icon(Icons.arrow_forward_ios_rounded),
+              ),
+              const Divider(
+                thickness: 1,
+                indent: 10,
+                endIndent: 10,
+              ),
+              ListTile(
+                selected: _selected == 3,
+                leading: const Icon(Icons.book),
+                title: const Text('Report'),
+                onTap: () {
+                  changeSelected(3);
+                },
+                trailing: const Icon(Icons.arrow_forward_ios_rounded),
+              ),
+              const Divider(
+                thickness: 1,
+                indent: 10,
+                endIndent: 10,
+              ),
+              ListTile(
+                selected: _selected == 4,
+                leading: const Icon(Icons.settings),
+                title: const Text('Settings'),
+                onTap: () {
+                  changeSelected(4);
+                },
+                trailing: const Icon(Icons.arrow_forward_ios_rounded),
+              ),
+              const Divider(
+                thickness: 1,
+                indent: 10,
+                endIndent: 10,
+              ),
+              ListTile(),
+              ListTile(),
+              ListTile(),
+              ListTile(),
+              ListTile(
+                selected: _selected == 5,
+                leading: const Icon(Icons.phone_android_rounded),
+                title: const Text('Contact Us'),
+                onTap: () {
+                  changeSelected(5);
+                },
+                trailing: const Icon(Icons.arrow_forward_ios_rounded),
+              ),
+              const Divider(
+                thickness: 1,
+                indent: 20,
+                endIndent: 10,
+              ),
+              ListTile(
+                selected: _selected == 6,
+                leading: const Icon(Icons.logout_sharp),
+                title: const Text('Logout'),
+                onTap: () {
+                  changeSelected(6);
+                },
+                trailing: const Icon(Icons.arrow_forward_ios_rounded),
+              ),
+              // const Divider(
+              //   thickness: 1,
+              //   indent: 10,
+              //   endIndent: 10,
+              // ),
+            ],
+          ),
         ),
         body: SafeArea(
             child: Container(
@@ -65,8 +199,9 @@ class _ChildIDState extends State<ChildID> {
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
-                                              builder: (context) =>
-                                                  MyNavPill(uid: widget.uid,)));
+                                              builder: (context) => MyNavPill(
+                                                    uid: widget.uid,
+                                                  )));
                                     },
                                     child: Text(
                                       'Neha Singh',
@@ -76,15 +211,13 @@ class _ChildIDState extends State<ChildID> {
                                     )),
                                 TextButton(
                                     onPressed: () {
-
                                       Navigator.push(
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
-                                                  MyNavPill(uid:widget.uid)));
+                                                  MyNavPill(uid: widget.uid)));
 
                                       print(widget.uid);
-
                                     },
                                     child: Text(
                                       widget.uid ?? '',
