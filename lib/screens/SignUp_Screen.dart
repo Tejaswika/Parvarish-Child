@@ -9,6 +9,7 @@ import 'package:child/constants/db_constants.dart';
 import 'package:device_apps/device_apps.dart';
 import 'dart:async';
 import 'package:app_usage/app_usage.dart';
+import 'package:child/services/local_storage_service.dart';
 import '../services/snackbar_service.dart';
 
 class SignUpPage extends StatefulWidget {

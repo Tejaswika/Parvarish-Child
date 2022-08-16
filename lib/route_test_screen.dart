@@ -2,11 +2,12 @@
 
 import 'dart:convert';
 
+import 'package:child/screens/Quiz/main_quiz.dart';
+import 'package:child/services/background_service.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:child/screens/WelcomeScreen.dart';
-import 'package:child/screens/app_ussage.dart';
 
 class RouteTestScreen extends StatelessWidget {
   const RouteTestScreen({Key? key}) : super(key: key);
@@ -46,6 +47,29 @@ class RouteTestScreen extends StatelessWidget {
                 ),
               ),
             ),
+
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MainQuiz(),
+                    ),
+                  );
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  color: Colors.red,
+                  child: const Text(
+                    'Quiz',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+            ),
+
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextButton(
@@ -62,7 +86,22 @@ class RouteTestScreen extends StatelessWidget {
                 ),
               ),
             ),
-
+            // Padding(
+            //   padding: const EdgeInsets.all(8.0),
+            //   child: TextButton(
+            //     onPressed: () {
+            //       BackgroundServices();
+            //     },
+            //     child: Container(
+            //       padding: const EdgeInsets.all(16),
+            //       color: Colors.red,
+            //       child: const Text(
+            //         'BackgroundServices',
+            //         style: TextStyle(color: Colors.white),
+            //       ),
+            //     ),
+            //   ),
+            // ),
             // LOGIN PAGE ............
           ],
         ),

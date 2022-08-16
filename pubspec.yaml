@@ -51,8 +51,6 @@ dependencies:
   flutter_local_notifications: ^9.7.0
   firebase_messaging: ^12.0.1
   http: ^0.13.5
-  animated_snack_bar: ^0.2.0
-  form_validator: ">=0.1.1 <2.0.0"
 
 
 dev_dependencies:
