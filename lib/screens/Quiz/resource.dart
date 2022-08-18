@@ -4,7 +4,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import '../../constants/db_constants.dart';
 
-import 'package:child/services/local_storage_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ResourcesScreen extends StatefulWidget {
@@ -15,8 +14,8 @@ class ResourcesScreen extends StatefulWidget {
 }
 
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+Map<String, Map<String, dynamic>> quizData = {};
 
-// Creating a reference to the collection
 late final CollectionReference _childCollection =
     _firestore.collection(DBConstants.childCollectionName);
 late final CollectionReference _quizDataCollection =
@@ -74,7 +73,6 @@ void getResource(quizesAlloted) async {
   });
 }
 
-late Map<String, Map<String, dynamic>> quizData;
 void fetchQuizData(id) async {
   DocumentReference documentReferencer = _quizDataCollection.doc(id);
   DocumentSnapshot quizDataSnapshot = await documentReferencer.get();

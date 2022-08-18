@@ -1,15 +1,13 @@
 import 'dart:async';
-import 'dart:io';
-import 'dart:ui';
 
+import 'package:child/screens/WelcomeScreen.dart';
+import 'package:child/screens/child_screen.dart';
 import 'package:child/services/local_storage_service.dart';
 import 'package:child/services/notification_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:child/route_test_screen.dart';
 
 import 'package:child/screens/background_service.dart';
-import 'package:flutter/services.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,12 +28,12 @@ Future<void> main() async {
   LocalStorageService.init();
   await initializeService();
   NotificationService.init();
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({Key? key}) : super(key: key);
-
+  MyApp({Key? key}) : super(key: key);
+  final String uid = LocalStorageService.getData("UserId");
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -45,7 +43,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const RouteTestScreen(),
+      home: uid != "" ? ChildID(uid: uid) : const WelcomeScreen(),
     );
   }
 }

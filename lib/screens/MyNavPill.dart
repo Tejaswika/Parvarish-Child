@@ -1,25 +1,11 @@
-import 'dart:math';
-
-import 'package:child/screens/Quiz/main_quiz.dart';
 import 'package:child/screens/Quiz/resource.dart';
-import 'package:child/screens/background_service.dart';
 import 'package:flutter/material.dart';
 import 'package:child/route_test_screen.dart';
-import 'package:child/screens/SignUp_Screen.dart';
+
 import 'package:syncfusion_flutter_charts/charts.dart';
 
-import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:child/constants/db_constants.dart';
-
-import '../services/local_storage_service.dart';
-
-import 'package:child/screens/Quiz/question.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:child/screens/Quiz/quiz.dart';
-import 'package:child/screens/Quiz/result.dart';
-import 'package:child/screens/Quiz/resource.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
   runApp(MaterialApp(

@@ -31,7 +31,6 @@ dependencies:
     sdk: flutter
   syncfusion_flutter_charts: ^20.2.43
   fl_chart: ^0.55.1
-  carousel_slider: ^4.1.1
   cupertino_icons: ^1.0.0
   # Firebase Database
   shared_preferences: ^2.0.15
