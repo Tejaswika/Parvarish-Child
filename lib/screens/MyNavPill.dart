@@ -1,32 +1,28 @@
+
 import 'package:child/screens/Quiz/resource.dart';
 import 'package:flutter/material.dart';
 import 'package:child/route_test_screen.dart';
+import 'dart:math';
+
+import 'package:flutter/material.dart';
+import 'package:child/route_test_screen.dart';
+import 'package:child/screens/signUp_screen.dart';
+
+import 'package:child/screens/screentime.dart';
+import 'package:syncfusion_flutter_charts/charts.dart';
 
 import 'package:syncfusion_flutter_charts/charts.dart';
+
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:child/constants/db_constants.dart';
 
-Future<void> main() async {
-  runApp(MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData.dark().copyWith(
-        elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.all(Colors.blueGrey[800]),
-        )),
-      ),
-      home: MyNavPill()));
-}
 
-final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-late final CollectionReference _quizCollection =
-    _firestore.collection(DBConstants.quizCollectionName);
-//Store this globally
-final GlobalKey<NavigatorState> _navKey = GlobalKey<NavigatorState>();
+
 
 class MyNavPill extends StatefulWidget {
-  MyNavPill({Key? key}) : super(key: key);
+  final String? uid;
+  const MyNavPill({Key? key, required this.uid}) : super(key: key);
 
   @override
   _MyNavPillState createState() => _MyNavPillState();
@@ -35,10 +31,37 @@ class MyNavPill extends StatefulWidget {
 class _MyNavPillState extends State<MyNavPill>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
+late final CollectionReference _quizCollection =
+    _firestore.collection(DBConstants.quizCollectionName);
+//Store this globally
+
+final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+late final CollectionReference _childCollection =
+    _firestore.collection(DBConstants.childCollectionName);
+
+Map<String, dynamic>? childData;
+Map<String, dynamic> apps = {};
+bool _loading = true;
+
+final GlobalKey<NavigatorState> _navKey = GlobalKey<NavigatorState>();
+
+
   @override
   void initState() {
     _tabController = TabController(length: 3, vsync: this);
+  readchildData(widget.uid);
     super.initState();
+  }
+    Future readchildData(uid) async {
+    DocumentReference documentReferencer = _childCollection.doc(uid);
+    DocumentSnapshot childDataSnapshot = await documentReferencer.get();
+
+    childData = childDataSnapshot.data() as Map<String, dynamic>;
+
+    apps = childData!['apps'];
+    setState(() {
+      _loading = false;
+    });
   }
 
   @override
@@ -67,7 +90,7 @@ class _MyNavPillState extends State<MyNavPill>
           builder: (_) => TabBarView(
             controller: _tabController,
             children: [
-              _FirstPage(),
+              _FirstPage(apps: apps,),
               SecondPage(),
               ResourcesScreen(),
             ],
@@ -80,29 +103,49 @@ class _MyNavPillState extends State<MyNavPill>
 
 class _ChartData {
   _ChartData(this.x, this.y);
-
   final String x;
-  final double y;
+  final int y;
 }
 
 class _FirstPage extends StatefulWidget {
   // ignore: prefer_const_constructors_in_immutables
-  _FirstPage({Key? key}) : super(key: key);
+  final Map<String, dynamic>? apps;
+
+  const _FirstPage({Key? key, required this.apps}) : super(key: key);
 
   @override
   FirstPageState createState() => FirstPageState();
 }
 
 class FirstPageState extends State<_FirstPage> {
-  late List<_ChartData> data;
+  late List<_ChartData> childApps = [];
   late TooltipBehavior _tooltip;
+  late Future<Map<String, dynamic>?> appsData;
+  late num totalAppHrs = 0;
+  late String totalScreenTime = '';
+  List<_ChartData> list2 = [];
+
+
 
   @override
   void initState() {
-    data = [
-      _ChartData('', 10),
-    ];
+    
+      widget.apps?.forEach((key, app) {
+        childApps
+            .add(_ChartData(app['app_name'], app['current_day_screen_time']));
+        totalAppHrs = totalAppHrs + app['current_day_screen_time'];
+      });
+      totalAppHrs = totalAppHrs ~/ 60;
+      totalScreenTime = totalAppHrs.toString();
+
+      list2 = childApps.where((map) => map.y > 20).toList();
+
+      print("**********************************************************");
+      print(totalAppHrs);
+      print("**********************************************************");
+
     _tooltip = TooltipBehavior(enable: true);
+
     super.initState();
   }
 
@@ -119,25 +162,21 @@ class FirstPageState extends State<_FirstPage> {
             Container(
                 child: RichText(
               text: TextSpan(
-                children: const <TextSpan>[
+                children: <TextSpan>[
                   TextSpan(
-                      text: 'Screen Time \n',
+                      text: 'Total Screen Time \n',
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 30,
+                          fontSize: 23,
                           color: Color.fromARGB(255, 0, 0, 0))),
                   TextSpan(
-                      text: '3h 8m \n',
+                      text: totalScreenTime,
                       style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          fontSize: 25,
+                          fontSize: 20,
                           color: Color.fromARGB(255, 0, 0, 0))),
                   TextSpan(
-                      text: '3h',
-                      style: TextStyle(
-                          fontSize: 20, color: Color.fromARGB(255, 0, 0, 0))),
-                  TextSpan(
-                      text: ' less than yesterday',
+                      text: ' hours',
                       style: TextStyle(
                           fontSize: 20,
                           color: Color.fromARGB(255, 190, 190, 190))),
@@ -145,20 +184,27 @@ class FirstPageState extends State<_FirstPage> {
               ),
             )),
             Container(
-              height: 150,
+              height: 280,
               child: SfCartesianChart(
+                  
                   primaryXAxis: CategoryAxis(),
-                  primaryYAxis: NumericAxis(
-                      minimum: 0, maximum: 20, interval: 20, isVisible: false),
+                  primaryYAxis: NumericAxis(),
                   tooltipBehavior: _tooltip,
-                  series: <ChartSeries<_ChartData, String>>[
-                    BarSeries<_ChartData, String>(
-                        dataSource: data,
-                        isTrackVisible: false,
-                        xValueMapper: (_ChartData data, _) => data.x,
-                        yValueMapper: (_ChartData data, _) => data.y,
-                        name: 'WhatsApp',
-                        color: Color.fromRGBO(8, 142, 255, 1))
+                  series: <CartesianSeries>[
+                    ColumnSeries<_ChartData, String>(
+                        dataSource: list2,
+                        xValueMapper: (_ChartData list2, _) => list2.x,
+                        yValueMapper: (_ChartData list2, _) => list2.y,
+                        
+                        width: 0.6,
+                        spacing: 0.3,
+                        sortingOrder: SortingOrder.descending,
+                        // Sorting based on the specified field
+                        sortFieldValueMapper: (_ChartData list2, _) => list2.y),
+
+                        
+
+                        
                   ]),
             ),
             Container(

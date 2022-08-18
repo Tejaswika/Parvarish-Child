@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:child/screens/WelcomeScreen.dart';
 import 'package:child/screens/child_screen.dart';
 import 'package:child/services/local_storage_service.dart';
+
 import 'package:child/services/notification_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
@@ -13,7 +14,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
     await Firebase.initializeApp(
-      options: const FirebaseOptions(
+      options: FirebaseOptions(
         apiKey: "AIzaSyAcypiXEDRZ3rsx78gspfxtuYpNRTPURg4",
         appId: "1:238970681958:web:69c6a3749087144b7b0ba7",
         messagingSenderId: "238970681958",
