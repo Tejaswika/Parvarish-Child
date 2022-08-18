@@ -2,14 +2,13 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:ui';
 
-import 'package:background_fetch/background_fetch.dart';
 import 'package:child/services/local_storage_service.dart';
 import 'package:child/services/notification_service.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:child/route_test_screen.dart';
 
-import 'package:child/services/background_service.dart';
+import 'package:child/screens/background_service.dart';
 import 'package:flutter/services.dart';
 
 Future<void> main() async {
@@ -29,6 +28,7 @@ Future<void> main() async {
     print(error);
   }
   LocalStorageService.init();
+  await initializeService();
   NotificationService.init();
   runApp(const MyApp());
 }

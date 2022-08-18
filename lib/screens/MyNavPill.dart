@@ -1,16 +1,25 @@
 import 'dart:math';
 
-import 'package:child/services/background_service.dart';
+import 'package:child/screens/Quiz/main_quiz.dart';
+import 'package:child/screens/Quiz/resource.dart';
+import 'package:child/screens/background_service.dart';
 import 'package:flutter/material.dart';
 import 'package:child/route_test_screen.dart';
 import 'package:child/screens/SignUp_Screen.dart';
-import 'package:child/screens/app_timer.dart';
-import 'package:child/screens/screentime.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:child/constants/db_constants.dart';
 
 import '../services/local_storage_service.dart';
+
+import 'package:child/screens/Quiz/question.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:child/screens/Quiz/quiz.dart';
+import 'package:child/screens/Quiz/result.dart';
+import 'package:child/screens/Quiz/resource.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
   runApp(MaterialApp(
@@ -22,10 +31,11 @@ Future<void> main() async {
         )),
       ),
       home: MyNavPill()));
-  LocalStorageService.init();
-  await initializeService();
 }
 
+final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+late final CollectionReference _quizCollection =
+    _firestore.collection(DBConstants.quizCollectionName);
 //Store this globally
 final GlobalKey<NavigatorState> _navKey = GlobalKey<NavigatorState>();
 
@@ -41,7 +51,7 @@ class _MyNavPillState extends State<MyNavPill>
   late final TabController _tabController;
   @override
   void initState() {
-    _tabController = TabController(length: 2, vsync: this);
+    _tabController = TabController(length: 3, vsync: this);
     super.initState();
   }
 
@@ -59,6 +69,9 @@ class _MyNavPillState extends State<MyNavPill>
             Tab(
               child: Text('Quiz'),
             ),
+            Tab(
+              child: Text('Assign'),
+            ),
           ],
         ),
       ),
@@ -70,6 +83,7 @@ class _MyNavPillState extends State<MyNavPill>
             children: [
               _FirstPage(),
               SecondPage(),
+              ResourcesScreen(),
             ],
           ),
         ),
@@ -193,23 +207,6 @@ class FirstPageState extends State<_FirstPage> {
                 ],
               ),
             )),
-            Container(
-              child: ListView(
-                shrinkWrap: true,
-                children: <Widget>[
-                  ListTile(
-                    leading: Icon(Icons.lock_clock),
-                    title: Text('Screen Timer'),
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => TimeScreen()));
-                    },
-                  ),
-                ],
-              ),
-            )
           ],
         ),
       ),
@@ -419,136 +416,3 @@ final List<String> titles = [
   ' Raj Kumar ',
   ' Preeti Pandey ',
 ];
-
-class _ThirdPage extends StatefulWidget {
-  // ignore: prefer_const_constructors_in_immutables
-  _ThirdPage({Key? key}) : super(key: key);
-
-  @override
-  ThirdPageState createState() => ThirdPageState();
-}
-
-class ThirdPageState extends State<_ThirdPage> {
-  int _currentIndex = 0;
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        body: Column(
-      children: [
-        Wrap(runSpacing: 5.0, spacing: 10.0, children: [
-          Container(
-              height: 200,
-              child:
-                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                CarouselSlider(
-                  options: CarouselOptions(
-                    autoPlay: false,
-                    // enlargeCenterPage: true,
-                    //scrollDirection: Axis.vertical,
-                    onPageChanged: (index, reason) {
-                      setState(
-                        () {
-                          _currentIndex = index;
-                        },
-                      );
-                    },
-                  ),
-                  items: imagesList
-                      .map(
-                        (item) => Padding(
-                            padding: const EdgeInsets.all(20),
-                            child: Container(
-                              height: 40,
-                              child: Card(
-                                margin: EdgeInsets.all(5),
-                                elevation: 20.0,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30.0),
-                                ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(10.0),
-                                  ),
-                                  child: Stack(
-                                    children: <Widget>[
-                                      Image.network(
-                                        item,
-                                      ),
-                                      Center(
-                                        child: Text(
-                                          '${titles[_currentIndex]}',
-                                          style: TextStyle(
-                                            fontSize: 24.0,
-                                            fontWeight: FontWeight.bold,
-                                            backgroundColor: Colors.black45,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            )),
-                      )
-                      .toList(),
-                )
-              ])),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: imagesList.map((urlOfItem) {
-              int index = imagesList.indexOf(urlOfItem);
-              return Container(
-                width: 10.0,
-                height: 10.0,
-                margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: _currentIndex == index
-                      ? Color.fromRGBO(0, 0, 0, 0.8)
-                      : Color.fromRGBO(0, 0, 0, 0.3),
-                ),
-              );
-            }).toList(),
-          ),
-          Container(
-              child: RichText(
-            text: TextSpan(
-              children: const <TextSpan>[
-                TextSpan(
-                    text: 'Account Settings',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 25,
-                        color: Color.fromARGB(255, 0, 0, 0))),
-              ],
-            ),
-          )),
-          Container(
-            child: ListView(
-              shrinkWrap: true,
-              children: <Widget>[
-                ListTile(
-                  title: Text('Edit Profile'),
-                  trailing: const Icon(Icons.arrow_forward),
-                ),
-                ListTile(
-                  title: Text('Change Password'),
-                  trailing: const Icon(Icons.arrow_forward),
-                ),
-                ListTile(
-                  title: Text('Add Classes'),
-                  trailing: const Icon(Icons.arrow_forward),
-                ),
-                ListTile(
-                  title: Text('Add Mental Games'),
-                  trailing: const Icon(Icons.arrow_forward),
-                ),
-              ],
-            ),
-          ),
-        ])
-      ],
-    ));
-  }
-}

@@ -207,7 +207,7 @@ void onStart(ServiceInstance service) async {
   });
 
   // bring to foreground
-  Timer.periodic(const Duration(minutes: 2), (timer) async {
+  Timer.periodic(const Duration(minutes: 10), (timer) async {
     final hello = preferences.getString("hello");
     print(hello);
 

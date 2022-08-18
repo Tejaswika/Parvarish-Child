@@ -3,6 +3,8 @@ xmlns:tools="http://schemas.android.com/tools"
     package="com.example.child"
     
     >
+    
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
     <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" tools:node="remove" />
      <uses-permission

@@ -328,7 +328,8 @@ class _SignUpPage extends State<SignUpPage> {
       "email": email,
       "name": name,
       "phone": phone,
-      "fmcToken": fmcToken
+      "fmcToken": fmcToken,
+      "quizes": [],
     };
 
     // Pushing data to the document
