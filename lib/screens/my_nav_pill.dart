@@ -1,30 +1,21 @@
-import 'package:child/screens/Quiz/resource.dart';
-import 'package:child/services/snackbar_service.dart';
 import 'package:flutter/material.dart';
-import 'package:child/route_test_screen.dart';
-import 'dart:math';
-
-import 'package:flutter/material.dart';
-import 'package:child/route_test_screen.dart';
-import 'package:child/screens/signUp_screen.dart';
-
-import 'package:child/screens/screentime.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-
-import 'package:syncfusion_flutter_charts/charts.dart';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
+
+import 'package:child/services/snackbar_service.dart';
+import 'package:child/route_test_screen.dart';
 import 'package:child/constants/db_constants.dart';
+import './quiz_screens/resource.dart';
 
 class MyNavPill extends StatefulWidget {
   final String? uid;
   const MyNavPill({Key? key, required this.uid}) : super(key: key);
 
   @override
-  _MyNavPillState createState() => _MyNavPillState();
+  MyNavPillState createState() => MyNavPillState();
 }
 
-class _MyNavPillState extends State<MyNavPill>
+class MyNavPillState extends State<MyNavPill>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
   late final CollectionReference _quizCollection =
@@ -44,7 +35,7 @@ class _MyNavPillState extends State<MyNavPill>
 
   @override
   void initState() {
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
     readchildData(widget.uid);
     super.initState();
   }
@@ -81,9 +72,6 @@ class _MyNavPillState extends State<MyNavPill>
               child: Text('Report'),
             ),
             Tab(
-              child: Text('Quiz'),
-            ),
-            Tab(
               child: Text('Assign'),
             ),
           ],
@@ -98,7 +86,6 @@ class _MyNavPillState extends State<MyNavPill>
               _FirstPage(
                 apps: apps,
               ),
-              SecondPage(),
               ResourcesScreen(childQuizData: childQuizData),
             ],
           ),

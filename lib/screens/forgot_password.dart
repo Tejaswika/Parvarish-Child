@@ -3,7 +3,7 @@
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/material.dart';
-import 'package:child/screens/signUp_screen.dart';
+import 'package:child/screens/signup_screen.dart';
 import 'package:child/screens/login_screen.dart';
 import 'package:child/screens/otp.dart';
 

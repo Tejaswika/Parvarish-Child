@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:child/screens/MyNavPill.dart';
+import 'package:child/screens/my_nav_pill.dart';
 
 class ChildID extends StatefulWidget {
   final String? uid;

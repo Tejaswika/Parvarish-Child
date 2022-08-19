@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:child/screens/WelcomeScreen.dart';
+import 'package:child/screens/welcome_screen.dart';
 import 'package:child/screens/child_screen.dart';
 import 'package:child/services/local_storage_service.dart';
 

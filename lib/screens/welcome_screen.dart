@@ -1,7 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:child/screens/signUp_screen.dart';
+import 'package:child/screens/signup_screen.dart';
 import 'package:child/screens/login_screen.dart';
 
 void main() {

@@ -35,19 +35,20 @@ class ResourcesScreenState extends State<ResourcesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // generateQuizData();
     return Scaffold(
         body: isLoading
             ? const CircularProgressIndicator()
             : ListView.builder(
                 itemCount: unattemtedQuizData.length,
                 itemBuilder: (context, index) {
-                  return QuizResource(quizData: unattemtedQuizData[index]);
+                  return QuizTile(quizData: unattemtedQuizData[index]);
                 }));
   }
 
   Future<Map<String, dynamic>> fetchQuizData(String quizId) async {
-    print("############################");
-    print(quizId);
+    debugPrint("############################");
+    debugPrint(quizId);
     DocumentReference documentReferencer =
         _quizDataCollection.doc(quizId.trim());
     DocumentSnapshot quizDataSnapshot = await documentReferencer.get();
@@ -58,6 +59,7 @@ class ResourcesScreenState extends State<ResourcesScreen> {
   }
 
   void generateQuizData() async {
+    debugPrint(isLoading.toString());
     widget.childQuizData.forEach((Map<String, dynamic> quiz) {
       if (quiz[ChildDataConstants.attempted]) {
         fetchQuizData(quiz[ChildDataConstants.quizId])
@@ -73,8 +75,8 @@ class ResourcesScreenState extends State<ResourcesScreen> {
         });
       }
     });
-    print(attemtedQuizData);
-    print(unattemtedQuizData);
+    debugPrint(attemtedQuizData.toString());
+    debugPrint(unattemtedQuizData.toString());
     setState(() {
       isLoading = false;
     });

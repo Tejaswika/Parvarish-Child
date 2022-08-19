@@ -1,16 +1,11 @@
-// ignore_for_file: unused_import, duplicate_import, prefer_const_constructors
-
 import 'dart:convert';
 
-import 'package:child/screens/Quiz/main_quiz.dart';
-import 'package:child/screens/background_service.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-import 'package:child/screens/WelcomeScreen.dart';
+import 'package:child/screens/welcome_screen.dart';
+import './screens/quiz_screens/main_quiz.dart';
 
-import 'package:child/services/local_storage_service.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class RouteTestScreen extends StatelessWidget {
   const RouteTestScreen({Key? key}) : super(key: key);

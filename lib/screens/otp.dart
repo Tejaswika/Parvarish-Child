@@ -3,7 +3,7 @@
 import 'package:flutter/src/foundation/key.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/material.dart';
-import 'package:child/screens/createnewpassword.dart';
+import 'package:child/screens/create_new_password.dart';
 
 class Otp extends StatefulWidget {
   const Otp({Key? key}) : super(key: key);
