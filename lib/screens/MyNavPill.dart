@@ -1,5 +1,5 @@
-
 import 'package:child/screens/Quiz/resource.dart';
+import 'package:child/services/snackbar_service.dart';
 import 'package:flutter/material.dart';
 import 'package:child/route_test_screen.dart';
 import 'dart:math';
@@ -13,12 +13,8 @@ import 'package:syncfusion_flutter_charts/charts.dart';
 
 import 'package:syncfusion_flutter_charts/charts.dart';
 
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:child/constants/db_constants.dart';
-
-
-
 
 class MyNavPill extends StatefulWidget {
   final String? uid;
@@ -31,37 +27,46 @@ class MyNavPill extends StatefulWidget {
 class _MyNavPillState extends State<MyNavPill>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
-late final CollectionReference _quizCollection =
-    _firestore.collection(DBConstants.quizCollectionName);
+  late final CollectionReference _quizCollection =
+      _firestore.collection(DBConstants.quizCollectionName);
 //Store this globally
 
-final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-late final CollectionReference _childCollection =
-    _firestore.collection(DBConstants.childCollectionName);
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  late final CollectionReference _childCollection =
+      _firestore.collection(DBConstants.childCollectionName);
 
-Map<String, dynamic>? childData;
-Map<String, dynamic> apps = {};
-bool _loading = true;
+  Map<String, dynamic>? childData;
+  Map<String, dynamic> apps = {};
+  List<Map<String, dynamic>> childQuizData = [];
+  bool _loading = true;
 
-final GlobalKey<NavigatorState> _navKey = GlobalKey<NavigatorState>();
-
+  final GlobalKey<NavigatorState> _navKey = GlobalKey<NavigatorState>();
 
   @override
   void initState() {
     _tabController = TabController(length: 3, vsync: this);
-  readchildData(widget.uid);
+    readchildData(widget.uid);
     super.initState();
   }
-    Future readchildData(uid) async {
+
+  void readchildData(uid) async {
     DocumentReference documentReferencer = _childCollection.doc(uid);
-    DocumentSnapshot childDataSnapshot = await documentReferencer.get();
+    DocumentSnapshot childDataSnapshot = await documentReferencer.get().onError(
+        (error, stackTrace) =>
+            SnackbarService.showErrorSnackbar(context, error.toString()));
 
     childData = childDataSnapshot.data() as Map<String, dynamic>;
-
-    apps = childData!['apps'];
-    setState(() {
-      _loading = false;
-    });
+    print("#################################################");
+    print(childData);
+    if (childData != null) {
+      setState(() {
+        childData![ChildDataConstants.quizes].forEach((childQuiz) {
+          childQuizData.add(childQuiz as Map<String, dynamic>);
+        });
+        apps = childData!['apps'];
+        _loading = false;
+      });
+    }
   }
 
   @override
@@ -90,9 +95,11 @@ final GlobalKey<NavigatorState> _navKey = GlobalKey<NavigatorState>();
           builder: (_) => TabBarView(
             controller: _tabController,
             children: [
-              _FirstPage(apps: apps,),
+              _FirstPage(
+                apps: apps,
+              ),
               SecondPage(),
-              ResourcesScreen(),
+              ResourcesScreen(childQuizData: childQuizData),
             ],
           ),
         ),
@@ -125,32 +132,32 @@ class FirstPageState extends State<_FirstPage> {
   late String totalScreenTime = '';
   List<_ChartData> list2 = [];
 
-
-
   @override
   void initState() {
-    
-      widget.apps?.forEach((key, app) {
-        childApps
-            .add(_ChartData(app['app_name'], app['current_day_screen_time']));
-        totalAppHrs = totalAppHrs + app['current_day_screen_time'];
-      });
-      totalAppHrs = totalAppHrs ~/ 60;
-      totalScreenTime = totalAppHrs.toString();
-
-      list2 = childApps.where((map) => map.y > 20).toList();
-
-      print("**********************************************************");
-      print(totalAppHrs);
-      print("**********************************************************");
-
     _tooltip = TooltipBehavior(enable: true);
 
     super.initState();
   }
 
+  void _generateAppData() {
+    widget.apps?.forEach((key, app) {
+      childApps
+          .add(_ChartData(app['app_name'], app['current_day_screen_time']));
+      totalAppHrs = totalAppHrs + app['current_day_screen_time'];
+    });
+    totalAppHrs = totalAppHrs ~/ 60;
+    totalScreenTime = totalAppHrs.toString();
+
+    list2 = childApps.where((map) => map.y > 20).toList();
+
+    print("**********************************************************");
+    print(totalAppHrs);
+    print("**********************************************************");
+  }
+
   @override
   Widget build(BuildContext context) {
+    _generateAppData();
     return Scaffold(
         body: SafeArea(
       child: Container(
@@ -186,7 +193,6 @@ class FirstPageState extends State<_FirstPage> {
             Container(
               height: 280,
               child: SfCartesianChart(
-                  
                   primaryXAxis: CategoryAxis(),
                   primaryYAxis: NumericAxis(),
                   tooltipBehavior: _tooltip,
@@ -195,16 +201,11 @@ class FirstPageState extends State<_FirstPage> {
                         dataSource: list2,
                         xValueMapper: (_ChartData list2, _) => list2.x,
                         yValueMapper: (_ChartData list2, _) => list2.y,
-                        
                         width: 0.6,
                         spacing: 0.3,
                         sortingOrder: SortingOrder.descending,
                         // Sorting based on the specified field
                         sortFieldValueMapper: (_ChartData list2, _) => list2.y),
-
-                        
-
-                        
                   ]),
             ),
             Container(

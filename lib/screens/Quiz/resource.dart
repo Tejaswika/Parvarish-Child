@@ -7,95 +7,76 @@ import '../../constants/db_constants.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ResourcesScreen extends StatefulWidget {
-  const ResourcesScreen({Key? key}) : super(key: key);
+  final List<Map<String, dynamic>> childQuizData;
+  const ResourcesScreen({
+    Key? key,
+    required this.childQuizData,
+  }) : super(key: key);
 
   @override
   State<ResourcesScreen> createState() => ResourcesScreenState();
 }
 
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-Map<String, Map<String, dynamic>> quizData = {};
+List<Map<String, dynamic>> attemtedQuizData = [];
+List<Map<String, dynamic>> unattemtedQuizData = [];
 
-late final CollectionReference _childCollection =
-    _firestore.collection(DBConstants.childCollectionName);
 late final CollectionReference _quizDataCollection =
     _firestore.collection(DBConstants.quizDataCollectionName);
-List resource = [];
-List quizID = [];
-
-Future<void> getUID() async {
-  SharedPreferences prefs = await SharedPreferences.getInstance();
-  try {
-    await Firebase.initializeApp(
-      options: const FirebaseOptions(
-        apiKey: "AIzaSyAcypiXEDRZ3rsx78gspfxtuYpNRTPURg4",
-        appId: "1:238970681958:web:69c6a3749087144b7b0ba7",
-        messagingSenderId: "238970681958",
-        projectId: "parvarish-e8a53",
-        storageBucket: "parvarish-e8a53.appspot.com",
-        authDomain: "parvarish-e8a53.firebaseapp.com",
-      ),
-    );
-  } catch (error) {
-    print(error);
-  }
-
-  if (prefs.getString('UserId') != "") {
-    print(prefs.getString('UserId'));
-    QuizID(prefs.getString('UserId'));
-  }
-}
-
-void QuizID(uid) async {
-  DocumentReference documentReferencer = _childCollection.doc(uid);
-  DocumentSnapshot childDataSnapshot = await documentReferencer.get();
-
-  Map<String, dynamic>? childData =
-      childDataSnapshot.data() as Map<String, dynamic>;
-  print(childData);
-  Map<String, dynamic> quizesAlloted = childData['quizes'];
-  print("************************************************************");
-  if (quizesAlloted != Null) {
-    print(quizesAlloted);
-    getResource(quizesAlloted);
-  } else {
-    print("N0 quiz id");
-  }
-  print("************************************************************");
-}
-
-void getResource(quizesAlloted) async {
-  quizesAlloted.forEach((quiz) {
-    quizID.add(quiz[ChildDataConstants.quizId]);
-  });
-  quizID.forEach((id) {
-    fetchQuizData(id);
-  });
-}
-
-void fetchQuizData(id) async {
-  DocumentReference documentReferencer = _quizDataCollection.doc(id);
-  DocumentSnapshot quizDataSnapshot = await documentReferencer.get();
-  Map<String, dynamic>? data = quizDataSnapshot.data() as Map<String, dynamic>;
-  quizData[id] = data;
-}
+// List completedQuizData = [];
 
 class ResourcesScreenState extends State<ResourcesScreen> {
+  bool isLoading = true;
   @override
   void initState() {
-    getUID();
+    generateQuizData();
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: ListView.builder(
-            itemCount: quizData.length,
-            itemBuilder: (context, index) {
-              return QuizResource(
-                  index: index, quizResource: quizData[resource]);
-            })
-            );
+        body: isLoading
+            ? const CircularProgressIndicator()
+            : ListView.builder(
+                itemCount: unattemtedQuizData.length,
+                itemBuilder: (context, index) {
+                  return QuizResource(quizData: unattemtedQuizData[index]);
+                }));
+  }
+
+  Future<Map<String, dynamic>> fetchQuizData(String quizId) async {
+    print("############################");
+    print(quizId);
+    DocumentReference documentReferencer =
+        _quizDataCollection.doc(quizId.trim());
+    DocumentSnapshot quizDataSnapshot = await documentReferencer.get();
+
+    Map<String, dynamic> quizData =
+        quizDataSnapshot.data() as Map<String, dynamic>;
+    return quizData;
+  }
+
+  void generateQuizData() async {
+    widget.childQuizData.forEach((Map<String, dynamic> quiz) {
+      if (quiz[ChildDataConstants.attempted]) {
+        fetchQuizData(quiz[ChildDataConstants.quizId])
+            .then((Map<String, dynamic> quizData) {
+          quiz["quiz_data"] = quizData;
+          attemtedQuizData.add(quiz);
+        });
+      } else {
+        fetchQuizData(quiz[ChildDataConstants.quizId])
+            .then((Map<String, dynamic> quizData) {
+          quiz["quiz_data"] = quizData;
+          unattemtedQuizData.add(quiz);
+        });
+      }
+    });
+    print(attemtedQuizData);
+    print(unattemtedQuizData);
+    setState(() {
+      isLoading = false;
+    });
   }
 }
