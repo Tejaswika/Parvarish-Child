@@ -144,7 +144,7 @@ Future<void> getInstalledApps() async {
 
   if (prefs.getString('UserId') != "") {
     print(prefs.getString('UserId'));
-    _updateDocument(prefs.getString('UserId'));
+    // _updateDocument(prefs.getString('UserId'));
   }
 }
 
@@ -207,42 +207,42 @@ void onStart(ServiceInstance service) async {
   });
 
   // bring to foreground
-  Timer.periodic(const Duration(minutes: 10), (timer) async {
-    final hello = preferences.getString("hello");
-    print(hello);
+  // Timer.periodic(const Duration(minutes: 10), (timer) async {
+  //   final hello = preferences.getString("hello");
+  //   print(hello);
 
-    if (service is AndroidServiceInstance) {
-      service.setForegroundNotificationInfo(
-        title: "Child DataBase Updated",
-        content: "Updated at ${DateTime.now()}",
-      );
-    }
-    getInstalledApps();
+  //   if (service is AndroidServiceInstance) {
+  //     service.setForegroundNotificationInfo(
+  //       title: "Child DataBase Updated",
+  //       content: "Updated at ${DateTime.now()}",
+  //     );
+  //   }
+  //   getInstalledApps();
 
-    /// you can see this log in logcat
-    print('FLUTTER BACKGROUND SERVICE: ${DateTime.now()}');
+  //   /// you can see this log in logcat
+  //   print('FLUTTER BACKGROUND SERVICE: ${DateTime.now()}');
 
-    // test using external plugin
-    final deviceInfo = DeviceInfoPlugin();
-    String? device;
-    if (Platform.isAndroid) {
-      final androidInfo = await deviceInfo.androidInfo;
-      device = androidInfo.model;
-    }
+  //   // test using external plugin
+  //   final deviceInfo = DeviceInfoPlugin();
+  //   String? device;
+  //   if (Platform.isAndroid) {
+  //     final androidInfo = await deviceInfo.androidInfo;
+  //     device = androidInfo.model;
+  //   }
 
-    if (Platform.isIOS) {
-      final iosInfo = await deviceInfo.iosInfo;
-      device = iosInfo.model;
-    }
+  //   if (Platform.isIOS) {
+  //     final iosInfo = await deviceInfo.iosInfo;
+  //     device = iosInfo.model;
+  //   }
 
-    service.invoke(
-      'update',
-      {
-        "current_date": DateTime.now().toIso8601String(),
-        "device": device,
-      },
-    );
-  });
+  //   service.invoke(
+  //     'update',
+  //     {
+  //       "current_date": DateTime.now().toIso8601String(),
+  //       "device": device,
+  //     },
+  //   );
+  // });
 }
 
 // class BackgroundServices extends StatefulWidget {

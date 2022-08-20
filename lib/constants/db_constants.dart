@@ -8,6 +8,8 @@ class DBConstants {
 class ChildDataConstants {
   static const difficultyLevel = "diffculty_level";
   static const attempted = "is_attempted";
+  static const topicName = "topic_name";
+  static const quizData = "quiz_data";
   static const blocked = "is_blocked";
   static const minScore = "min_score";
   static const quizId = "quiz_id";
@@ -15,4 +17,8 @@ class ChildDataConstants {
   static const totalAttempts = "total_attempts";
   static const totalScores = "total_score";
   static const quizes = "quizes";
+}
+
+class QuizDataConstants {
+  static const resources = "resources";
 }

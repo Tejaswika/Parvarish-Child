@@ -14,7 +14,7 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   try {
     await Firebase.initializeApp(
-      options: FirebaseOptions(
+      options: const FirebaseOptions(
         apiKey: "AIzaSyAcypiXEDRZ3rsx78gspfxtuYpNRTPURg4",
         appId: "1:238970681958:web:69c6a3749087144b7b0ba7",
         messagingSenderId: "238970681958",
@@ -44,7 +44,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: uid != "" ? ChildID(uid: uid) : const WelcomeScreen(),
+      home: uid != "" ? ChildScreen(uid: uid) : const WelcomeScreen(),
     );
   }
 }

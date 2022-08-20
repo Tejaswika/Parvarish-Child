@@ -5,7 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:child/services/snackbar_service.dart';
 import 'package:child/route_test_screen.dart';
 import 'package:child/constants/db_constants.dart';
-import './quiz_screens/resource.dart';
+import './quiz_screens/assigned_quiz_screen.dart';
 
 class MyNavPill extends StatefulWidget {
   final String? uid;
@@ -67,12 +67,12 @@ class MyNavPillState extends State<MyNavPill>
         title: Text('Parvarish'),
         bottom: TabBar(
           controller: _tabController,
-          tabs: [
+          tabs: const [
             Tab(
               child: Text('Report'),
             ),
             Tab(
-              child: Text('Assign'),
+              child: Text('Assigned Quizzes'),
             ),
           ],
         ),
@@ -86,7 +86,7 @@ class MyNavPillState extends State<MyNavPill>
               _FirstPage(
                 apps: apps,
               ),
-              ResourcesScreen(childQuizData: childQuizData),
+              AssignedQuizScreen(childQuizData: childQuizData),
             ],
           ),
         ),
@@ -122,6 +122,7 @@ class FirstPageState extends State<_FirstPage> {
   @override
   void initState() {
     _tooltip = TooltipBehavior(enable: true);
+    _generateAppData();
 
     super.initState();
   }
@@ -144,7 +145,6 @@ class FirstPageState extends State<_FirstPage> {
 
   @override
   Widget build(BuildContext context) {
-    _generateAppData();
     return Scaffold(
         body: SafeArea(
       child: Container(

@@ -9,6 +9,8 @@ import 'package:child/screens/signup_screen.dart';
 import '../services/local_storage_service.dart';
 
 class LoginPage extends StatefulWidget {
+  const LoginPage({Key? key}) : super(key: key);
+
   @override
   State<LoginPage> createState() => _LoginPage();
 }
@@ -90,7 +92,7 @@ class _LoginPage extends State<LoginPage> {
                                 'UserId', userCredential.user?.uid ?? '');
                             Navigator.of(context).pushReplacement(
                                 MaterialPageRoute(
-                                    builder: (context) => ChildID(
+                                    builder: (context) => ChildScreen(
                                         uid: userCredential.user?.uid)));
                           });
                         },

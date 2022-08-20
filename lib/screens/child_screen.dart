@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:child/screens/my_nav_pill.dart';
 
-class ChildID extends StatefulWidget {
+class ChildScreen extends StatefulWidget {
   final String? uid;
-  ChildID({Key? key, required this.uid}) : super(key: key);
+  const ChildScreen({Key? key, required this.uid}) : super(key: key);
 
   @override
-  _ChildIDState createState() => _ChildIDState();
+  ChildScreenState createState() => ChildScreenState();
 }
 
-class _ChildIDState extends State<ChildID> {
+class ChildScreenState extends State<ChildScreen> {
   int _selected = 0;
   void changeSelected(int index) {
     setState(() {
@@ -21,7 +21,7 @@ class _ChildIDState extends State<ChildID> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text('Child ID'),
+          title: const Text('Setup Screen'),
         ),
         drawer: Drawer(
           child: ListView(
@@ -115,10 +115,7 @@ class _ChildIDState extends State<ChildID> {
                 indent: 10,
                 endIndent: 10,
               ),
-              ListTile(),
-              ListTile(),
-              ListTile(),
-              ListTile(),
+              const ListTile(),
               ListTile(
                 selected: _selected == 5,
                 leading: const Icon(Icons.phone_android_rounded),
@@ -142,11 +139,6 @@ class _ChildIDState extends State<ChildID> {
                 },
                 trailing: const Icon(Icons.arrow_forward_ios_rounded),
               ),
-              // const Divider(
-              //   thickness: 1,
-              //   indent: 10,
-              //   endIndent: 10,
-              // ),
             ],
           ),
         ),
@@ -157,10 +149,9 @@ class _ChildIDState extends State<ChildID> {
                   runSpacing: 5.0,
                   spacing: 10.0,
                   children: [
-                    Container(
-                        child: RichText(
-                      text: TextSpan(
-                        children: const <TextSpan>[
+                    RichText(
+                      text: const TextSpan(
+                        children: <TextSpan>[
                           TextSpan(
                               text: 'Welcome To Parvarish',
                               style: TextStyle(
@@ -169,11 +160,10 @@ class _ChildIDState extends State<ChildID> {
                                   color: Color.fromARGB(255, 0, 0, 0))),
                         ],
                       ),
-                    )),
-                    Container(
-                        child: RichText(
-                      text: TextSpan(
-                        children: const <TextSpan>[
+                    ),
+                    RichText(
+                      text: const TextSpan(
+                        children: <TextSpan>[
                           TextSpan(
                               text:
                                   'Enter Unique ID in the parent app for linking profile',
@@ -181,15 +171,15 @@ class _ChildIDState extends State<ChildID> {
                                   fontSize: 20, color: Colors.blueGrey)),
                         ],
                       ),
-                    )),
+                    ),
                     Row(
                       children: <Widget>[
                         Expanded(
-                          child: Container(
-                            padding: EdgeInsets.all(10),
+                          child: Padding(
+                            padding: const EdgeInsets.all(10),
                             child: Column(
                               children: <Widget>[
-                                CircleAvatar(
+                                const CircleAvatar(
                                   radius: 40,
                                   backgroundImage: NetworkImage(
                                       'https://cdn-icons-png.flaticon.com/512/2922/2922561.png'),
@@ -203,7 +193,7 @@ class _ChildIDState extends State<ChildID> {
                                                     uid: widget.uid,
                                                   )));
                                     },
-                                    child: Text(
+                                    child: const Text(
                                       'Neha Singh',
                                       style: TextStyle(
                                           fontSize: 16,
@@ -221,7 +211,7 @@ class _ChildIDState extends State<ChildID> {
                                     },
                                     child: Text(
                                       widget.uid ?? '',
-                                      style: TextStyle(
+                                      style: const TextStyle(
                                           fontSize: 16,
                                           color: Color.fromARGB(255, 0, 0, 0)),
                                     )),
