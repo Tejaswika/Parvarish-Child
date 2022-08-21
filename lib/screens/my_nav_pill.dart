@@ -5,6 +5,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:child/services/snackbar_service.dart';
 import 'package:child/route_test_screen.dart';
 import 'package:child/constants/db_constants.dart';
+import '../widget/home_appdrawer.dart';
 import './quiz_screens/assigned_quiz_screen.dart';
 
 class MyNavPill extends StatefulWidget {
@@ -64,7 +65,7 @@ class MyNavPillState extends State<MyNavPill>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Parvarish'),
+        title:  const Text('Parvarish'),
         bottom: TabBar(
           controller: _tabController,
           tabs: const [
@@ -77,13 +78,14 @@ class MyNavPillState extends State<MyNavPill>
           ],
         ),
       ),
+      drawer: HomeAppDrawer(childQuizData: childQuizData, childData: childData,apps: apps),
       body: Navigator(
         key: _navKey,
         onGenerateRoute: (_) => MaterialPageRoute(
           builder: (_) => TabBarView(
             controller: _tabController,
             children: [
-              _FirstPage(
+              FirstPage(
                 apps: apps,
               ),
               AssignedQuizScreen(childQuizData: childQuizData),
@@ -101,17 +103,17 @@ class _ChartData {
   final int y;
 }
 
-class _FirstPage extends StatefulWidget {
+class FirstPage extends StatefulWidget {
   // ignore: prefer_const_constructors_in_immutables
   final Map<String, dynamic>? apps;
 
-  const _FirstPage({Key? key, required this.apps}) : super(key: key);
+  const FirstPage({Key? key, required this.apps}) : super(key: key);
 
   @override
   FirstPageState createState() => FirstPageState();
 }
 
-class FirstPageState extends State<_FirstPage> {
+class FirstPageState extends State<FirstPage> {
   late List<_ChartData> childApps = [];
   late TooltipBehavior _tooltip;
   late Future<Map<String, dynamic>?> appsData;

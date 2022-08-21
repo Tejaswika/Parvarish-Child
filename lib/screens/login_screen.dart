@@ -92,7 +92,7 @@ class _LoginPage extends State<LoginPage> {
                                 'UserId', userCredential.user?.uid ?? '');
                             Navigator.of(context).pushReplacement(
                                 MaterialPageRoute(
-                                    builder: (context) => ChildScreen(
+                                    builder: (context) => MyNavPill(
                                         uid: userCredential.user?.uid)));
                           });
                         },

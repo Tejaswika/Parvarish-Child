@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import 'package:child/constants/db_constants.dart';
+import 'package:flutter/material.dart';
 
 import 'main_quiz.dart';
 
@@ -26,8 +27,8 @@ class _ResourceScreenState extends State<ResourceScreen> {
 
   @override
   Widget build(BuildContext context) {
-    print("################################");
-    print(widget.quizData);
+    // print("################################");
+    // print(widget.quizData);
     return Scaffold(
       appBar: AppBar(
         title: const Text("Parvarish"),
@@ -69,7 +70,8 @@ class _ResourceScreenState extends State<ResourceScreen> {
             MaterialPageRoute(
                 builder: (context) => MainQuiz(
                     questions: widget.quizData[ChildDataConstants.quizData]
-                        [QuizDataConstants.questions]))),
+                        [QuizDataConstants.questions],
+                    quizData: widget.quizData))),
         label: const Text("Start quiz"),
         icon: const Icon(Icons.quiz),
       ),
