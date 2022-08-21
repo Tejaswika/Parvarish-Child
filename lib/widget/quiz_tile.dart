@@ -9,8 +9,8 @@ class QuizTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    print("###################################3");
-    print(quizData);
+    // print("###################################3");
+    // print(quizData);
     return ListTile(
       onTap: () {
         Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(

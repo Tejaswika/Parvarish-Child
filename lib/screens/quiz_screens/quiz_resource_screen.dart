@@ -1,6 +1,8 @@
 import 'package:child/constants/db_constants.dart';
 import 'package:flutter/material.dart';
 
+import 'main_quiz.dart';
+
 class ResourceScreen extends StatefulWidget {
   final Map<String, dynamic> quizData;
   const ResourceScreen({Key? key, required this.quizData}) : super(key: key);
@@ -12,6 +14,8 @@ class ResourceScreen extends StatefulWidget {
 class _ResourceScreenState extends State<ResourceScreen> {
   @override
   Widget build(BuildContext context) {
+    print("################################");
+    print(widget.quizData);
     return Scaffold(
       appBar: AppBar(
         title: const Text("Parvarish"),
@@ -20,7 +24,18 @@ class _ResourceScreenState extends State<ResourceScreen> {
           onPressed: () => Navigator.of(context).pop(),
         ),
       ),
-      body: const Text("hello resource"),
+      body: Text(widget.quizData[ChildDataConstants.quizData]
+              [QuizDataConstants.resources] ??
+          "Error"),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => MainQuiz(
+                    questions: widget.quizData[ChildDataConstants.quizData]
+                        [QuizDataConstants.questions]))),
+        label: const Text("Start quiz"),
+      ),
     );
   }
 }

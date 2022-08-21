@@ -28,8 +28,8 @@ class AssignedQuizScreenState extends State<AssignedQuizScreen> {
   bool isLoading = true;
   @override
   void initState() {
-    print("Heloo initState");
-    print(widget.childQuizData);
+    // print("Heloo initState");
+    // print(widget.childQuizData);
     if (attemtedQuizData.length + unattemtedQuizData.length !=
         widget.childQuizData.length) {
       generateQuizData();
@@ -117,10 +117,10 @@ class AssignedQuizScreenState extends State<AssignedQuizScreen> {
   }
 
   Future<void> generateQuizData() async {
-    int i = 0;
-    print("########################");
-    print(++i);
-    print("########################");
+    // int i = 0;
+    // print("########################");
+    // print(++i);
+    // print("########################");
     widget.childQuizData
         .asMap()
         .forEach((int index, Map<String, dynamic> quiz) async {

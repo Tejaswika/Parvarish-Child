@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import './question.dart';
+import '../../widget/question_text.dart';
 import './answer.dart';
 
 // Flutter Hope

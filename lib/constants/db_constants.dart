@@ -21,4 +21,6 @@ class ChildDataConstants {
 
 class QuizDataConstants {
   static const resources = "resources";
+  static const questions = "Questions";
+  static const correctOpt = "Correct Option";
 }
