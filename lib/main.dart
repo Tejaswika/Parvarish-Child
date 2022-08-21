@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:child/screens/my_nav_pill.dart';
 import 'package:child/screens/welcome_screen.dart';
 import 'package:child/screens/child_screen.dart';
 import 'package:child/services/local_storage_service.dart';
@@ -44,7 +45,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: uid != "" ? ChildScreen(uid: uid) : const WelcomeScreen(),
+      home: uid != "" ? MyNavPill(uid: uid) : const WelcomeScreen(),
     );
   }
 }
