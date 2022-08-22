@@ -1,4 +1,3 @@
-import 'package:child/screens/welcome_screen.dart';
 import 'package:child/services/local_storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -128,9 +127,7 @@ class _HomeAppDrawerState extends State<HomeAppDrawer> {
               name: 'Log out',
               icon: Icons.logout,
               onPressed: () {
-                LocalStorageService.setData("UserId", "");
-                // Navigator.pushReplacement(context, 
-                // MaterialPageRoute(builder: ((context) => const WelcomeScreen())));
+                LocalStorageService.setData("UserId","");
                 exitDialog();
               },
             ),
