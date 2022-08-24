@@ -5,7 +5,12 @@ import '../screens/quiz_screens/quiz_resource_screen.dart';
 
 class QuizTile extends StatelessWidget {
   final Map<String, dynamic> quizData;
-  const QuizTile({Key? key, required this.quizData}) : super(key: key);
+  final Function callBack;
+  const QuizTile({
+    Key? key,
+    required this.quizData,
+    required this.callBack,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -13,8 +18,14 @@ class QuizTile extends StatelessWidget {
     // print(quizData);
     return ListTile(
       onTap: () {
-        Navigator.of(context, rootNavigator: true).push(MaterialPageRoute(
-            builder: (context) => ResourceScreen(quizData: quizData)));
+        Navigator.of(context, rootNavigator: true).push(
+          MaterialPageRoute(
+            builder: (context) => ResourceScreen(
+              quizData: quizData,
+              callback: callBack,
+            ),
+          ),
+        );
       },
       title: Text(quizData[ChildDataConstants.topicName]),
       subtitle: Text(quizData[ChildDataConstants.difficultyLevel]),

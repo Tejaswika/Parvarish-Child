@@ -1,3 +1,4 @@
+import 'package:child/services/local_storage_service.dart';
 import 'package:child/services/snackbar_service.dart';
 import 'package:child/widget/quiz_tile.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -7,6 +8,7 @@ import '../../constants/db_constants.dart';
 
 class AssignedQuizScreen extends StatefulWidget {
   final List<Map<String, dynamic>> childQuizData;
+  // final String childID;
   const AssignedQuizScreen({
     Key? key,
     required this.childQuizData,
@@ -22,14 +24,19 @@ class AssignedQuizScreenState extends State<AssignedQuizScreen> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   List<Map<String, dynamic>> attemtedQuizData = [];
   List<Map<String, dynamic>> unattemtedQuizData = [];
-
+  late List<Map<String, dynamic>> currentChildQuizData;
+  final String childId = LocalStorageService.getData("UserId");
   late final CollectionReference _quizDataCollection =
       _firestore.collection(DBConstants.quizDataCollectionName);
+
+  late final CollectionReference _childDataCollection =
+      _firestore.collection(DBConstants.childCollectionName);
   bool isLoading = true;
   @override
   void initState() {
     // print("Heloo initState");
     // print(widget.childQuizData);
+    currentChildQuizData = widget.childQuizData;
     if (attemtedQuizData.length + unattemtedQuizData.length !=
         widget.childQuizData.length) {
       generateQuizData();
@@ -39,6 +46,24 @@ class AssignedQuizScreenState extends State<AssignedQuizScreen> {
       });
     }
     super.initState();
+  }
+
+  void getChildQuizData() async {
+    print("hello");
+    setState(() {
+      isLoading = true;
+    });
+    DocumentReference documentReferencer = _childDataCollection.doc(childId);
+    DocumentSnapshot dataSnapshot = await documentReferencer.get();
+    Map<String, dynamic> childData =
+        dataSnapshot.data() as Map<String, dynamic>;
+    List<Map<String, dynamic>> tempQuizData = [];
+    childData[ChildDataConstants.quizes].forEach(
+        (childQuiz) => tempQuizData.add(childQuiz as Map<String, dynamic>));
+    currentChildQuizData = tempQuizData;
+    attemtedQuizData = [];
+    unattemtedQuizData = [];
+    generateQuizData();
   }
 
   @override
@@ -71,7 +96,10 @@ class AssignedQuizScreenState extends State<AssignedQuizScreen> {
                           shrinkWrap: true,
                           itemCount: attemtedQuizData.length,
                           itemBuilder: (context, index) {
-                            return QuizTile(quizData: attemtedQuizData[index]);
+                            return QuizTile(
+                              quizData: attemtedQuizData[index],
+                              callBack: getChildQuizData,
+                            );
                           },
                         ),
                   const Divider(thickness: 1),
@@ -93,7 +121,9 @@ class AssignedQuizScreenState extends State<AssignedQuizScreen> {
                           itemCount: unattemtedQuizData.length,
                           itemBuilder: (context, index) {
                             return QuizTile(
-                                quizData: unattemtedQuizData[index]);
+                              quizData: unattemtedQuizData[index],
+                              callBack: getChildQuizData,
+                            );
                           },
                         ),
                 ],
@@ -121,7 +151,7 @@ class AssignedQuizScreenState extends State<AssignedQuizScreen> {
     // print("########################");
     // print(++i);
     // print("########################");
-    widget.childQuizData
+    currentChildQuizData
         .asMap()
         .forEach((int index, Map<String, dynamic> quiz) async {
       if (quiz[ChildDataConstants.attempted]) {
@@ -130,7 +160,7 @@ class AssignedQuizScreenState extends State<AssignedQuizScreen> {
           quiz[ChildDataConstants.quizData] = quizData;
           attemtedQuizData.add(quiz);
         });
-        if (index == widget.childQuizData.length - 1) {
+        if (index == currentChildQuizData.length - 1) {
           setState(() {
             isLoading = false;
           });
@@ -141,7 +171,7 @@ class AssignedQuizScreenState extends State<AssignedQuizScreen> {
           quiz["quiz_data"] = quizData;
           unattemtedQuizData.add(quiz);
         });
-        if (index == widget.childQuizData.length - 1) {
+        if (index == currentChildQuizData.length - 1) {
           setState(() {
             isLoading = false;
           });

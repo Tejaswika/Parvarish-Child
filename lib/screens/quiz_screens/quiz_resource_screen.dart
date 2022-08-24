@@ -9,7 +9,12 @@ import 'main_quiz.dart';
 
 class ResourceScreen extends StatefulWidget {
   final Map<String, dynamic> quizData;
-  const ResourceScreen({Key? key, required this.quizData}) : super(key: key);
+  final Function callback;
+  const ResourceScreen({
+    Key? key,
+    required this.quizData,
+    required this.callback,
+  }) : super(key: key);
 
   @override
   State<ResourceScreen> createState() => _ResourceScreenState();
@@ -66,12 +71,16 @@ class _ResourceScreenState extends State<ResourceScreen> {
       ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => MainQuiz(
-                    questions: widget.quizData[ChildDataConstants.quizData]
-                        [QuizDataConstants.questions],
-                    quizData: widget.quizData))),
+          context,
+          MaterialPageRoute(
+            builder: (context) => MainQuiz(
+              questions: widget.quizData[ChildDataConstants.quizData]
+                  [QuizDataConstants.questions],
+              quizData: widget.quizData,
+              callback: widget.callback,
+            ),
+          ),
+        ),
         label: const Text("Start quiz"),
         icon: const Icon(Icons.quiz),
       ),

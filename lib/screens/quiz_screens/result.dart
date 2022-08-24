@@ -9,13 +9,15 @@ class Result extends StatefulWidget {
   final int QuizLength;
   final VoidCallback resetQuizHandler;
   final Map<String, dynamic> quizData;
-  const Result(
-      {Key? key,
-      required this.resultScore,
-      required this.QuizLength,
-      required this.resetQuizHandler,
-      required this.quizData})
-      : super(key: key);
+  final Function callback;
+  const Result({
+    Key? key,
+    required this.resultScore,
+    required this.QuizLength,
+    required this.resetQuizHandler,
+    required this.quizData,
+    required this.callback,
+  }) : super(key: key);
   @override
   State<Result> createState() => _ResultState();
 }
@@ -48,10 +50,10 @@ class _ResultState extends State<Result> {
       }
     });
 
-    await documentReferencer
-        .update(childData)
-        .whenComplete(() => print("updated Marks"))
-        .catchError((e) => print(e));
+    await documentReferencer.update(childData).then((val) {
+      // Navigator.pop(context);
+      widget.callback();
+    }).catchError((e) => print(e));
   }
 
   @override
