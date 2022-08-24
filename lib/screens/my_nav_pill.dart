@@ -1,85 +1,94 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
-import 'package:child/route_test_screen.dart';
-import 'package:child/screens/signUp_screen.dart';
-
-import 'package:child/screens/screentime.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
-
-import 'package:carousel_slider/carousel_slider.dart';
-
-import 'package:child/constants/db_constants.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-// void main() {
-//   runApp(MaterialApp(
-//       debugShowCheckedModeBanner: false,
-//       theme: ThemeData.dark().copyWith(
-//         elevatedButtonTheme: ElevatedButtonThemeData(
-//             style: ButtonStyle(
-//           backgroundColor: MaterialStateProperty.all(Colors.blueGrey[800]),
-//         )),
-//       ),
-//       home: MyNavPill()));
-// }
-
-//Store this globally
-
-final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-late final CollectionReference _childCollection =
-    _firestore.collection(DBConstants.childCollectionName);
-
-Map<String, dynamic>? childData;
-Map<String, dynamic>? apps;
-bool _loading = true;
-
-final GlobalKey<NavigatorState> _navKey = GlobalKey<NavigatorState>();
+import 'package:child/services/snackbar_service.dart';
+import 'package:child/route_test_screen.dart';
+import 'package:child/constants/db_constants.dart';
+import '../widget/home_appdrawer.dart';
+import './quiz_screens/assigned_quiz_screen.dart';
 
 class MyNavPill extends StatefulWidget {
   final String? uid;
   const MyNavPill({Key? key, required this.uid}) : super(key: key);
 
   @override
-  _MyNavPillState createState() => _MyNavPillState();
+  MyNavPillState createState() => MyNavPillState();
 }
 
-class _MyNavPillState extends State<MyNavPill>
+class MyNavPillState extends State<MyNavPill>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
+  late final CollectionReference _quizCollection =
+      _firestore.collection(DBConstants.quizCollectionName);
+//Store this globally
+
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  late final CollectionReference _childCollection =
+      _firestore.collection(DBConstants.childCollectionName);
+
+  Map<String, dynamic>? childData;
+  Map<String, dynamic> apps = {};
+  List<Map<String, dynamic>> childQuizData = [];
+  bool _loading = true;
+
+  final GlobalKey<NavigatorState> _navKey = GlobalKey<NavigatorState>();
 
   @override
   void initState() {
     _tabController = TabController(length: 2, vsync: this);
-
+    readchildData(widget.uid);
     super.initState();
+  }
+
+  void readchildData(uid) async {
+    DocumentReference documentReferencer = _childCollection.doc(uid);
+    DocumentSnapshot childDataSnapshot = await documentReferencer.get().onError(
+        (error, stackTrace) =>
+            SnackbarService.showErrorSnackbar(context, error.toString()));
+
+    childData = childDataSnapshot.data() as Map<String, dynamic>;
+    print("#################################################");
+    print(childData);
+    if (childData != null) {
+      setState(() {
+        childData![ChildDataConstants.quizes].forEach((childQuiz) {
+          childQuizData.add(childQuiz as Map<String, dynamic>);
+        });
+        apps = childData!['apps'];
+        _loading = false;
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Parvarish'),
+        title:  const Text('Parvarish'),
         bottom: TabBar(
           controller: _tabController,
-          tabs: [
+          tabs: const [
             Tab(
               child: Text('Report'),
             ),
             Tab(
-              child: Text('Quiz'),
+              child: Text('Assigned Quizzes'),
             ),
           ],
         ),
       ),
+      drawer: HomeAppDrawer(childQuizData: childQuizData, childData: childData,apps: apps),
       body: Navigator(
         key: _navKey,
         onGenerateRoute: (_) => MaterialPageRoute(
           builder: (_) => TabBarView(
             controller: _tabController,
             children: [
-              _FirstPage(UID: widget.uid),
-              SecondPage(),
+              FirstPage(
+                apps: apps,
+              ),
+              AssignedQuizScreen(childQuizData: childQuizData),
             ],
           ),
         ),
@@ -94,17 +103,17 @@ class _ChartData {
   final int y;
 }
 
-class _FirstPage extends StatefulWidget {
+class FirstPage extends StatefulWidget {
   // ignore: prefer_const_constructors_in_immutables
-  final String? UID;
+  final Map<String, dynamic>? apps;
 
-  const _FirstPage({Key? key, required this.UID}) : super(key: key);
+  const FirstPage({Key? key, required this.apps}) : super(key: key);
 
   @override
   FirstPageState createState() => FirstPageState();
 }
 
-class FirstPageState extends State<_FirstPage> {
+class FirstPageState extends State<FirstPage> {
   late List<_ChartData> childApps = [];
   late TooltipBehavior _tooltip;
   late Future<Map<String, dynamic>?> appsData;
@@ -112,40 +121,28 @@ class FirstPageState extends State<_FirstPage> {
   late String totalScreenTime = '';
   List<_ChartData> list2 = [];
 
-  Future readchildData(uid) async {
-    DocumentReference documentReferencer = _childCollection.doc(uid);
-    DocumentSnapshot childDataSnapshot = await documentReferencer.get();
-
-    childData = childDataSnapshot.data() as Map<String, dynamic>;
-
-    apps = childData!['apps'];
-    setState(() {
-      _loading = false;
-    });
-  }
-
   @override
   void initState() {
-    readchildData(widget.UID);
-    if (_loading == false) {
-      apps?.forEach((key, app) {
-        childApps
-            .add(_ChartData(app['app_name'], app['current_day_screen_time']));
-        totalAppHrs = totalAppHrs + app['current_day_screen_time'];
-      });
-      totalAppHrs = totalAppHrs ~/ 60;
-      totalScreenTime = totalAppHrs.toString();
-
-      list2 = childApps.where((map) => map.y > 20).toList();
-
-      print("**********************************************************");
-      print(totalAppHrs);
-      print("**********************************************************");
-    }
-
     _tooltip = TooltipBehavior(enable: true);
+    _generateAppData();
 
     super.initState();
+  }
+
+  void _generateAppData() {
+    widget.apps?.forEach((key, app) {
+      childApps
+          .add(_ChartData(app['app_name'], app['current_day_screen_time']));
+      totalAppHrs = totalAppHrs + app['current_day_screen_time'];
+    });
+    totalAppHrs = totalAppHrs ~/ 60;
+    totalScreenTime = totalAppHrs.toString();
+
+    list2 = childApps.where((map) => map.y > 20).toList();
+
+    print("**********************************************************");
+    print(totalAppHrs);
+    print("**********************************************************");
   }
 
   @override
@@ -185,7 +182,6 @@ class FirstPageState extends State<_FirstPage> {
             Container(
               height: 280,
               child: SfCartesianChart(
-                  
                   primaryXAxis: CategoryAxis(),
                   primaryYAxis: NumericAxis(),
                   tooltipBehavior: _tooltip,
@@ -194,16 +190,11 @@ class FirstPageState extends State<_FirstPage> {
                         dataSource: list2,
                         xValueMapper: (_ChartData list2, _) => list2.x,
                         yValueMapper: (_ChartData list2, _) => list2.y,
-                        
                         width: 0.6,
                         spacing: 0.3,
                         sortingOrder: SortingOrder.descending,
                         // Sorting based on the specified field
                         sortFieldValueMapper: (_ChartData list2, _) => list2.y),
-
-                        
-
-                        
                   ]),
             ),
             Container(
@@ -238,23 +229,6 @@ class FirstPageState extends State<_FirstPage> {
                 ],
               ),
             )),
-            Container(
-              child: ListView(
-                shrinkWrap: true,
-                children: <Widget>[
-                  ListTile(
-                    leading: Icon(Icons.lock_clock),
-                    title: Text('Screen Timer'),
-                    onTap: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => TimeScreen()));
-                    },
-                  ),
-                ],
-              ),
-            )
           ],
         ),
       ),
@@ -464,136 +438,3 @@ final List<String> titles = [
   ' Raj Kumar ',
   ' Preeti Pandey ',
 ];
-
-class _ThirdPage extends StatefulWidget {
-  // ignore: prefer_const_constructors_in_immutables
-  _ThirdPage({Key? key}) : super(key: key);
-
-  @override
-  ThirdPageState createState() => ThirdPageState();
-}
-
-class ThirdPageState extends State<_ThirdPage> {
-  int _currentIndex = 0;
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-        body: Column(
-      children: [
-        Wrap(runSpacing: 5.0, spacing: 10.0, children: [
-          Container(
-              height: 200,
-              child:
-                  Row(mainAxisAlignment: MainAxisAlignment.center, children: [
-                CarouselSlider(
-                  options: CarouselOptions(
-                    autoPlay: false,
-                    // enlargeCenterPage: true,
-                    //scrollDirection: Axis.vertical,
-                    onPageChanged: (index, reason) {
-                      setState(
-                        () {
-                          _currentIndex = index;
-                        },
-                      );
-                    },
-                  ),
-                  items: imagesList
-                      .map(
-                        (item) => Padding(
-                            padding: const EdgeInsets.all(20),
-                            child: Container(
-                              height: 40,
-                              child: Card(
-                                margin: EdgeInsets.all(5),
-                                elevation: 20.0,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(30.0),
-                                ),
-                                child: ClipRRect(
-                                  borderRadius: BorderRadius.all(
-                                    Radius.circular(10.0),
-                                  ),
-                                  child: Stack(
-                                    children: <Widget>[
-                                      Image.network(
-                                        item,
-                                      ),
-                                      Center(
-                                        child: Text(
-                                          '${titles[_currentIndex]}',
-                                          style: TextStyle(
-                                            fontSize: 24.0,
-                                            fontWeight: FontWeight.bold,
-                                            backgroundColor: Colors.black45,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            )),
-                      )
-                      .toList(),
-                )
-              ])),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: imagesList.map((urlOfItem) {
-              int index = imagesList.indexOf(urlOfItem);
-              return Container(
-                width: 10.0,
-                height: 10.0,
-                margin: EdgeInsets.symmetric(vertical: 10.0, horizontal: 2.0),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: _currentIndex == index
-                      ? Color.fromRGBO(0, 0, 0, 0.8)
-                      : Color.fromRGBO(0, 0, 0, 0.3),
-                ),
-              );
-            }).toList(),
-          ),
-          Container(
-              child: RichText(
-            text: TextSpan(
-              children: const <TextSpan>[
-                TextSpan(
-                    text: 'Account Settings',
-                    style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 25,
-                        color: Color.fromARGB(255, 0, 0, 0))),
-              ],
-            ),
-          )),
-          Container(
-            child: ListView(
-              shrinkWrap: true,
-              children: <Widget>[
-                ListTile(
-                  title: Text('Edit Profile'),
-                  trailing: const Icon(Icons.arrow_forward),
-                ),
-                ListTile(
-                  title: Text('Change Password'),
-                  trailing: const Icon(Icons.arrow_forward),
-                ),
-                ListTile(
-                  title: Text('Add Classes'),
-                  trailing: const Icon(Icons.arrow_forward),
-                ),
-                ListTile(
-                  title: Text('Add Mental Games'),
-                  trailing: const Icon(Icons.arrow_forward),
-                ),
-              ],
-            ),
-          ),
-        ])
-      ],
-    ));
-  }
-}

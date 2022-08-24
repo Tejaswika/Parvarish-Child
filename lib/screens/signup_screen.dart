@@ -307,7 +307,7 @@ class _SignUpPage extends State<SignUpPage> {
         .then((UserCredential userCredential) {
       LocalStorageService.setData('UserId', userCredential.user?.uid ?? '');
       Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (context) => ChildID(uid: userCredential.user?.uid)));
+          builder: (context) => ChildScreen(uid: userCredential.user?.uid)));
       _createDocument(
           userCredential.user?.uid, _name, _email, _phone, _grade, _age);
     });
@@ -328,7 +328,8 @@ class _SignUpPage extends State<SignUpPage> {
       "email": email,
       "name": name,
       "phone": phone,
-      "fmcToken": fmcToken
+      "fmcToken": fmcToken,
+      "quizes": [],
     };
 
     // Pushing data to the document
