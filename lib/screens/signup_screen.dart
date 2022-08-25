@@ -156,7 +156,7 @@ class _SignUpPage extends State<SignUpPage> {
                     child: Container(
                   child: Column(children: [
                     Container(
-                      padding: EdgeInsets.all(30),
+                      padding: EdgeInsets.all(15),
                       child: TextField(
                         keyboardType: TextInputType.name,
                         decoration: InputDecoration(
@@ -171,7 +171,7 @@ class _SignUpPage extends State<SignUpPage> {
                       ),
                     ),
                     Container(
-                      padding: EdgeInsets.all(30),
+                      padding: EdgeInsets.all(15),
                       child: TextField(
                         keyboardType: TextInputType.emailAddress,
                         decoration: InputDecoration(
@@ -186,7 +186,7 @@ class _SignUpPage extends State<SignUpPage> {
                       ),
                     ),
                     Container(
-                      padding: EdgeInsets.all(30),
+                      padding: EdgeInsets.all(15),
                       child: TextField(
                         keyboardType: TextInputType.number,
                         decoration: InputDecoration(
@@ -201,7 +201,7 @@ class _SignUpPage extends State<SignUpPage> {
                       ),
                     ),
                     Container(
-                      padding: EdgeInsets.all(30),
+                      padding: EdgeInsets.all(15),
                       child: TextField(
                         keyboardType: TextInputType.number,
                         decoration: InputDecoration(
@@ -216,7 +216,7 @@ class _SignUpPage extends State<SignUpPage> {
                       ),
                     ),
                     Container(
-                      padding: EdgeInsets.all(30),
+                      padding: EdgeInsets.all(15),
                       child: TextField(
                         keyboardType: TextInputType.phone,
                         decoration: InputDecoration(
@@ -231,7 +231,7 @@ class _SignUpPage extends State<SignUpPage> {
                       ),
                     ),
                     Container(
-                      padding: EdgeInsets.only(left: 30, top: 30, right: 30),
+                      padding: EdgeInsets.all(15),
                       child: TextField(
                         obscureText: true, //password stays hidden
                         decoration: InputDecoration(
@@ -245,7 +245,7 @@ class _SignUpPage extends State<SignUpPage> {
                       ),
                     ),
                     Padding(
-                      padding: const EdgeInsets.all(30),
+                      padding: const EdgeInsets.all(15),
                       child: MaterialButton(
                         minWidth: double.infinity,
                         height: 50,
@@ -265,10 +265,7 @@ class _SignUpPage extends State<SignUpPage> {
                         ),
                       ),
                     ),
-                    SizedBox(
-                      //giave space between 2 boxes
-                      height: 20,
-                    ),
+                    
                     Container(
                       padding: EdgeInsets.only(left: 25),
                       child: Row(
