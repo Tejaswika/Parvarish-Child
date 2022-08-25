@@ -3,6 +3,7 @@ import 'dart:io';
 import 'dart:ui';
 
 import 'package:device_info_plus/device_info_plus.dart';
+import 'package:device_policy_manager/device_policy_manager.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_background_service/flutter_background_service.dart';
@@ -27,19 +28,23 @@ List<AppUsageInfo> infoListForToday = [];
 List<AppUsageInfo> infoListForWeek = [];
 List<AppUsageInfo> infoListForMonth = [];
 
-Map<String, dynamic> formatAppStats() {
+Map<String, dynamic> formatAppStats(Map<String, dynamic> childAppStats) {
   Map<String, dynamic> _appStats = {};
   infoListForToday.forEach((app) {
     _appStats[app.packageName] = {
       "current_day_screen_time": app.usage.inMinutes,
-      "app_name": app.appName
+      "app_name": app.appName,
+      "max_screen_time":
+          childAppStats[app.packageName]?['max_screen_time'] ?? 0,
     };
   });
   infoListForWeek.forEach((app) {
     if (_appStats[app.packageName] == null) {
       _appStats[app.packageName] = {
         "current_day_screen_time": 0,
-        "app_name": app.appName
+        "app_name": app.appName,
+        "max_screen_time":
+            childAppStats[app.packageName]?['max_screen_time'] ?? 0,
       };
     }
 
@@ -51,7 +56,9 @@ Map<String, dynamic> formatAppStats() {
       _appStats[app.packageName] = {
         "current_day_screen_time": 0,
         "current_week_screen_time": 0,
-        "app_name": app.appName
+        "app_name": app.appName,
+        "max_screen_time":
+            childAppStats[app.packageName]?['max_screen_time'] ?? 0,
       };
     }
     _appStats[app.packageName]["current_month_screen_time"] =
@@ -105,8 +112,13 @@ void getUsageStats(List<Application> installedApps) async {
 void _updateDocument(uid) async {
   // Creating a refrence(Anchor) to the document we want to access
   DocumentReference documentReferencer = _childCollection.doc(uid);
+  DocumentSnapshot childDataSnapshot = await documentReferencer.get();
+
+  Map<String, dynamic> childData =
+      childDataSnapshot.data() as Map<String, dynamic>;
+
   await getInstalledApps();
-  Map<String, dynamic> childAppStats = formatAppStats();
+  Map<String, dynamic> childAppStats = formatAppStats(childData['apps']);
 
   // Creating data to be stored
 
@@ -114,11 +126,26 @@ void _updateDocument(uid) async {
     "apps": childAppStats,
   };
 
+  Map<String, dynamic> childAppData = childData['apps'];
+
+  childAppData.keys.forEach((dynamic app) {
+    if (childData['apps'][app]['max_screen_time'] != 0 &&
+        childData['apps'][app]['current_day_screen_time'] >=
+            childData['apps'][app]['max_screen_time']) {
+      print("${childData['apps'][app]} Exceeded the screen time");
+      try {
+        DevicePolicyManager.lockNow();
+      } catch (e) {
+        print(e);
+      }
+    }
+  });
+
   // Pushing data to the document
-  await documentReferencer
-      .update(data)
-      .whenComplete(() => print("Apps data updated to the database"))
-      .catchError((e) => print(e));
+  // await documentReferencer
+  //     .update(data)
+  //     .whenComplete(() => print("Apps data updated to the database"))
+  //     .catchError((e) => print(e));
 }
 
 Future<void> getInstalledApps() async {
@@ -207,42 +234,42 @@ void onStart(ServiceInstance service) async {
   });
 
   // bring to foreground
-  // Timer.periodic(const Duration(minutes: 10), (timer) async {
-  //   final hello = preferences.getString("hello");
-  //   print(hello);
+  Timer.periodic(const Duration(minutes: 1), (timer) async {
+    final hello = preferences.getString("hello");
+    print(hello);
 
-  //   if (service is AndroidServiceInstance) {
-  //     service.setForegroundNotificationInfo(
-  //       title: "Child DataBase Updated",
-  //       content: "Updated at ${DateTime.now()}",
-  //     );
-  //   }
-  //   getInstalledApps();
+    if (service is AndroidServiceInstance) {
+      service.setForegroundNotificationInfo(
+        title: "Child DataBase Updated",
+        content: "Updated at ${DateTime.now()}",
+      );
+    }
+    getInstalledApps();
 
-  //   /// you can see this log in logcat
-  //   print('FLUTTER BACKGROUND SERVICE: ${DateTime.now()}');
+    /// you can see this log in logcat
+    print('FLUTTER BACKGROUND SERVICE: ${DateTime.now()}');
 
-  //   // test using external plugin
-  //   final deviceInfo = DeviceInfoPlugin();
-  //   String? device;
-  //   if (Platform.isAndroid) {
-  //     final androidInfo = await deviceInfo.androidInfo;
-  //     device = androidInfo.model;
-  //   }
+    // test using external plugin
+    final deviceInfo = DeviceInfoPlugin();
+    String? device;
+    if (Platform.isAndroid) {
+      final androidInfo = await deviceInfo.androidInfo;
+      device = androidInfo.model;
+    }
 
-  //   if (Platform.isIOS) {
-  //     final iosInfo = await deviceInfo.iosInfo;
-  //     device = iosInfo.model;
-  //   }
+    if (Platform.isIOS) {
+      final iosInfo = await deviceInfo.iosInfo;
+      device = iosInfo.model;
+    }
 
-  //   service.invoke(
-  //     'update',
-  //     {
-  //       "current_date": DateTime.now().toIso8601String(),
-  //       "device": device,
-  //     },
-  //   );
-  // });
+    service.invoke(
+      'update',
+      {
+        "current_date": DateTime.now().toIso8601String(),
+        "device": device,
+      },
+    );
+  });
 }
 
 // class BackgroundServices extends StatefulWidget {

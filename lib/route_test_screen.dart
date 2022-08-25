@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:device_policy_manager/device_policy_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
@@ -47,14 +48,16 @@ class RouteTestScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: TextButton(
-                onPressed: () {
-                  sendPushMessage();
+                onPressed: () async{
+                  // sendPushMessage();
+                  
+                  
                 },
                 child: Container(
                   padding: const EdgeInsets.all(16),
                   color: Colors.red,
                   child: const Text(
-                    'Send Notification',
+                    'Lock',
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
