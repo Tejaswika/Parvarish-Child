@@ -82,6 +82,8 @@ class _HomeAppDrawerState extends State<HomeAppDrawer> {
                     MaterialPageRoute(
                         builder: (context) =>
                               ScreenTimeReport(UID:widget.uid)));
+                        //builder: (context) => FirstPage(apps: widget.apps)));
+
               },
             ),
             const Divider(thickness: 1),
