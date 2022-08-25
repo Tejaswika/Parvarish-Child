@@ -1,3 +1,4 @@
+import 'package:child/screens/screen_time_report.dart';
 import 'package:child/services/local_storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -11,7 +12,8 @@ class HomeAppDrawer extends StatefulWidget {
     List<Map<String, dynamic>> childQuizData;
     Map<String, dynamic>? apps;
     Map<String, dynamic>? childData;
-  HomeAppDrawer({Key? key, required this.childQuizData, required this.childData, required this.apps}) : super(key: key);
+    final String? uid;
+  HomeAppDrawer({Key? key, required this.childQuizData, required this.childData, required this.apps, required this.uid}) : super(key: key);
 
   @override
   State<HomeAppDrawer> createState() => _HomeAppDrawerState();
@@ -82,7 +84,7 @@ class _HomeAppDrawerState extends State<HomeAppDrawer> {
                     context,
                     MaterialPageRoute(
                         builder: (context) =>
-                              FirstPage(apps: widget.apps)));
+                              ScreenTimeReport(UID:widget.uid)));
               },
             ),
             const Divider(thickness: 1),
