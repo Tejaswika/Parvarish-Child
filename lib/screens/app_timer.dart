@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
+import '../constants/db_constants.dart';
 
 class _ChartData {
   _ChartData(this.x, this.y);
@@ -8,26 +11,41 @@ class _ChartData {
 
 class Apptimer extends StatefulWidget {
   final List appData;
-  const Apptimer({Key? key, required this.appData}) : super(key: key);
+  final String? UID;
+  const Apptimer({Key? key, required this.appData, required this.UID})
+      : super(key: key);
   @override
   State<Apptimer> createState() => _Apptimer();
 }
 
 class _Apptimer extends State<Apptimer> {
   void initState() {
-    print(widget.appData);
-
     super.initState();
   }
 
   final TimeOfDay? newTime = TimeOfDay(hour: 0, minute: 0);
-  void _sectTime() async {
+  num timemin = 0;
+  void _sectTime(String appName) async {
     final TimeOfDay? newTime = await showTimePicker(
-        context: context,
-        initialTime: TimeOfDay(hour: 7, minute: 15),
-        initialEntryMode: TimePickerEntryMode.input);
+      context: context,
+      initialTime: TimeOfDay(hour: 0, minute: 0),
+      builder: (BuildContext context, Widget? child) {
+        return MediaQuery(
+          data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+          child: child!,
+        );
+      },
+    );
+
+    if (newTime != null) {
+      timemin = ((newTime!.hour * 60) + (newTime!.minute));
+      updateChildData(appName);
+    }
   }
 
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  late CollectionReference childCollection =
+      _firestore.collection(DBConstants.childCollectionName);
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,8 +78,8 @@ class _Apptimer extends State<Apptimer> {
                     child: ListTile(
                       title: Text(app.x + "\n" + app.y.toString() + " min"),
                       trailing: ElevatedButton(
-                        onPressed: _sectTime,
-                        child: Icon(
+                        onPressed: () => _sectTime(app.x.toString()),
+                        child: const Icon(
                           Icons.timer,
                           color: Color.fromARGB(255, 255, 255, 255),
                         ),
@@ -105,5 +123,24 @@ class _Apptimer extends State<Apptimer> {
         ),
       ),
     );
+  }
+
+  void updateChildData(String appName) async {
+    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+    late final CollectionReference _childCollection =
+        _firestore.collection(DBConstants.childCollectionName);
+    DocumentReference documentReferencer = _childCollection.doc(widget.UID);
+    DocumentSnapshot ChildrenDataSnapshot = await documentReferencer.get();
+    Map<String, dynamic>? childData =
+        ChildrenDataSnapshot.data() as Map<String, dynamic>;
+    childData['apps'].keys.forEach((app) {
+      if (childData['apps'][app]['app_name'] == appName) {
+        childData['apps'][app]['max_screen_time'] = timemin;
+      }
+    });
+
+    await documentReferencer
+        .update(childData)
+        .then((v) => print('Update Max_Screen_Time'));
   }
 }

@@ -78,7 +78,11 @@ class MyNavPillState extends State<MyNavPill>
         ),
       ),
       drawer: HomeAppDrawer(
-          childQuizData: childQuizData, childData: childData, apps: apps),
+        childQuizData: childQuizData,
+        childData: childData,
+        apps: apps,
+        uid: widget.uid,
+      ),
       body: Navigator(
         key: _navKey,
         onGenerateRoute: (_) => MaterialPageRoute(

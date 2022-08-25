@@ -1,3 +1,4 @@
+import 'package:child/screens/screen_time_report.dart';
 import 'package:child/services/local_storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -8,10 +9,17 @@ import 'drawer_item.dart';
 import '../../constants/db_constants.dart';
 
 class HomeAppDrawer extends StatefulWidget {
-    List<Map<String, dynamic>> childQuizData;
-    Map<String, dynamic>? apps;
-    Map<String, dynamic>? childData;
-  HomeAppDrawer({Key? key, required this.childQuizData, required this.childData, required this.apps}) : super(key: key);
+  List<Map<String, dynamic>> childQuizData;
+  Map<String, dynamic>? apps;
+  Map<String, dynamic>? childData;
+  final String? uid;
+  HomeAppDrawer(
+      {Key? key,
+      required this.childQuizData,
+      required this.childData,
+      required this.apps,
+      required this.uid})
+      : super(key: key);
 
   @override
   State<HomeAppDrawer> createState() => _HomeAppDrawerState();
@@ -40,7 +48,7 @@ class _HomeAppDrawerState extends State<HomeAppDrawer> {
       ),
     );
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -58,20 +66,17 @@ class _HomeAppDrawerState extends State<HomeAppDrawer> {
                 ),
               ),
               accountEmail: Text(
-                widget.childData?[ChildDataConstants.email] ?? "parent@gmail.com",
+                widget.childData?[ChildDataConstants.email] ??
+                    "parent@gmail.com",
                 style: const TextStyle(
                   fontSize: 15,
                 ),
               ),
-              currentAccountPicture:  CircleAvatar(
+              currentAccountPicture: CircleAvatar(
                 backgroundColor: Colors.white30,
-        
-                child: Text(
-                  '${widget.childData?[ChildDataConstants.name][0]}'
-                ),
+                child: Text('${widget.childData?[ChildDataConstants.name][0]}'),
               ),
             ),
-        
 
             DrawerItem(
               name: 'Report',
@@ -82,7 +87,7 @@ class _HomeAppDrawerState extends State<HomeAppDrawer> {
                     context,
                     MaterialPageRoute(
                         builder: (context) =>
-                              FirstPage(apps: widget.apps)));
+                            ScreenTimeReport(UID: widget.uid)));
               },
             ),
             const Divider(thickness: 1),
@@ -95,7 +100,8 @@ class _HomeAppDrawerState extends State<HomeAppDrawer> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) =>  AssignedQuizScreen(childQuizData: widget.childQuizData)));
+                        builder: (context) => AssignedQuizScreen(
+                            childQuizData: widget.childQuizData)));
               },
             ),
             const Spacer(),
@@ -127,7 +133,7 @@ class _HomeAppDrawerState extends State<HomeAppDrawer> {
               name: 'Log out',
               icon: Icons.logout,
               onPressed: () {
-                LocalStorageService.setData("UserId","");
+                LocalStorageService.setData("UserId", "");
                 exitDialog();
               },
             ),
@@ -137,18 +143,3 @@ class _HomeAppDrawerState extends State<HomeAppDrawer> {
     );
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
