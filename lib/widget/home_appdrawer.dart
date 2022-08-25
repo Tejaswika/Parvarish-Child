@@ -9,7 +9,6 @@ import 'drawer_item.dart';
 import '../../constants/db_constants.dart';
 
 class HomeAppDrawer extends StatefulWidget {
-<<<<<<< HEAD
   List<Map<String, dynamic>> childQuizData;
   Map<String, dynamic>? apps;
   Map<String, dynamic>? childData;
@@ -21,13 +20,6 @@ class HomeAppDrawer extends StatefulWidget {
       required this.apps,
       required this.uid})
       : super(key: key);
-=======
-    List<Map<String, dynamic>> childQuizData;
-    Map<String, dynamic>? apps;
-    Map<String, dynamic>? childData;
-    final String? uid;
-  HomeAppDrawer({Key? key, required this.childQuizData, required this.childData, required this.apps, required this.uid}) : super(key: key);
->>>>>>> 3d20c912ff1a41530f97e668bda2e339a30832ae
 
   @override
   State<HomeAppDrawer> createState() => _HomeAppDrawerState();
@@ -95,13 +87,8 @@ class _HomeAppDrawerState extends State<HomeAppDrawer> {
                     context,
                     MaterialPageRoute(
                         builder: (context) =>
-<<<<<<< HEAD
                             ScreenTimeReport(UID: widget.uid)));
-=======
-                              ScreenTimeReport(UID:widget.uid)));
-                        //builder: (context) => FirstPage(apps: widget.apps)));
-
->>>>>>> 3d20c912ff1a41530f97e668bda2e339a30832ae
+                //builder: (context) => FirstPage(apps: widget.apps)));
               },
             ),
             const Divider(thickness: 1),
@@ -115,13 +102,9 @@ class _HomeAppDrawerState extends State<HomeAppDrawer> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => AssignedQuizScreen(
-<<<<<<< HEAD
-                            childQuizData: widget.childQuizData)));
-=======
                               childQuizData: widget.childQuizData,
                               childData: widget.childData,
                             )));
->>>>>>> 3d20c912ff1a41530f97e668bda2e339a30832ae
               },
             ),
             const Spacer(),
