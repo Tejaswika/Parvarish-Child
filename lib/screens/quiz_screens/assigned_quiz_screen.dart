@@ -5,13 +5,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 import '../../constants/db_constants.dart';
+import '../../widget/new_quiz.dart';
 
 class AssignedQuizScreen extends StatefulWidget {
   final List<Map<String, dynamic>> childQuizData;
-  // final String childID;
+  final Map<String, dynamic>? childData;
   const AssignedQuizScreen({
     Key? key,
     required this.childQuizData,
+    required this.childData,
   }) : super(key: key);
 
   @override
@@ -48,6 +50,17 @@ class AssignedQuizScreenState extends State<AssignedQuizScreen> {
     super.initState();
   }
 
+  void _createQuiz(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.vertical(top: Radius.circular(30))),
+        builder: (_) {
+          return NewQuiz(childData: widget.childData, callback: getChildQuizData,);
+          // behavior: HitTestBehavior.deferToChild,
+        });
+  }
+
   void getChildQuizData() async {
     print("hello");
     setState(() {
@@ -70,6 +83,10 @@ class AssignedQuizScreenState extends State<AssignedQuizScreen> {
   Widget build(BuildContext context) {
     // generateQuizData();
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => _createQuiz(context),
+        child: const Icon(Icons.add),
+      ),
       body: isLoading
           ? const Center(
               child: CircularProgressIndicator(),

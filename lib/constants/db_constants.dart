@@ -7,6 +7,7 @@ class DBConstants {
 
 class ChildDataConstants {
   static const name = 'name';
+  static const grade = "class";
   static const email = 'email';
   static const phone = 'phone';
   static const difficultyLevel = "diffculty_level";

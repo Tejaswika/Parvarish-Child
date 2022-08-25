@@ -42,7 +42,7 @@ class _HomeAppDrawerState extends State<HomeAppDrawer> {
       ),
     );
   }
-  
+
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -60,20 +60,17 @@ class _HomeAppDrawerState extends State<HomeAppDrawer> {
                 ),
               ),
               accountEmail: Text(
-                widget.childData?[ChildDataConstants.email] ?? "parent@gmail.com",
+                widget.childData?[ChildDataConstants.email] ??
+                    "parent@gmail.com",
                 style: const TextStyle(
                   fontSize: 15,
                 ),
               ),
-              currentAccountPicture:  CircleAvatar(
+              currentAccountPicture: CircleAvatar(
                 backgroundColor: Colors.white30,
-        
-                child: Text(
-                  '${widget.childData?[ChildDataConstants.name][0]}'
-                ),
+                child: Text('${widget.childData?[ChildDataConstants.name][0]}'),
               ),
             ),
-        
 
             DrawerItem(
               name: 'Report',
@@ -85,6 +82,8 @@ class _HomeAppDrawerState extends State<HomeAppDrawer> {
                     MaterialPageRoute(
                         builder: (context) =>
                               ScreenTimeReport(UID:widget.uid)));
+                        //builder: (context) => FirstPage(apps: widget.apps)));
+
               },
             ),
             const Divider(thickness: 1),
@@ -97,7 +96,10 @@ class _HomeAppDrawerState extends State<HomeAppDrawer> {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) =>  AssignedQuizScreen(childQuizData: widget.childQuizData)));
+                        builder: (context) => AssignedQuizScreen(
+                              childQuizData: widget.childQuizData,
+                              childData: widget.childData,
+                            )));
               },
             ),
             const Spacer(),
@@ -129,7 +131,7 @@ class _HomeAppDrawerState extends State<HomeAppDrawer> {
               name: 'Log out',
               icon: Icons.logout,
               onPressed: () {
-                LocalStorageService.setData("UserId","");
+                LocalStorageService.setData("UserId", "");
                 exitDialog();
               },
             ),
@@ -139,18 +141,3 @@ class _HomeAppDrawerState extends State<HomeAppDrawer> {
     );
   }
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
