@@ -72,7 +72,7 @@ class MyNavPillState extends State<MyNavPill>
               child: Text('Report'),
             ),
             Tab(
-              child: Text('Assigned Quizzes'),
+              child: Text('Quizzes'),
             ),
           ],
         ),
@@ -92,7 +92,8 @@ class MyNavPillState extends State<MyNavPill>
               ScreenTimeReport(
                 UID: widget.uid,
               ),
-              AssignedQuizScreen(childQuizData: childQuizData),
+              AssignedQuizScreen(
+                  childQuizData: childQuizData, childData: childData),
             ],
           ),
         ),

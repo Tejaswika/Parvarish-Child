@@ -1,3 +1,4 @@
+import 'package:child/screens/kids_resources.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -202,6 +203,23 @@ class ScreenTimeReportState extends State<ScreenTimeReport> {
                                           UID: widget.UID,
                                           appData:
                                               childAppsDataDaily.toList())));
+                            },
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      child: ListView(
+                        shrinkWrap: true,
+                        children: <Widget>[
+                          ListTile(
+                            leading: const Icon(Icons.lock_clock),
+                            title: const Text('Kid resources'),
+                            onTap: () {
+                              Navigator.of(context, rootNavigator: true).push(
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const KidsResources()));
                             },
                           ),
                         ],
