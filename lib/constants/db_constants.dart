@@ -3,6 +3,7 @@ class DBConstants {
   static const childCollectionName = 'children';
   static const quizCollectionName = 'quizes';
   static const quizDataCollectionName = 'quiz_data';
+    static const resourceCollectionName = 'resources';
 }
 
 class ChildDataConstants {
