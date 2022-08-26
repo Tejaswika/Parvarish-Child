@@ -17,6 +17,39 @@ import 'package:child/constants/db_constants.dart';
 import 'package:device_apps/device_apps.dart';
 import 'dart:async';
 import 'package:app_usage/app_usage.dart';
+import 'package:location/location.dart';
+
+Location location = new Location();
+
+late bool _serviceEnabled;
+
+late PermissionStatus _permissionGranted;
+
+late LocationData _locationData;
+
+bool _getLocation = false;
+
+void servicecheck() async {
+  _serviceEnabled = await location.serviceEnabled();
+  if (!_serviceEnabled) {
+    _serviceEnabled = await location.requestService();
+    if (!_serviceEnabled) {
+      return;
+    }
+  }
+
+  _permissionGranted = await location.hasPermission();
+  if (_permissionGranted == PermissionStatus.denied) {
+    _permissionGranted = await location.requestPermission();
+    if (_permissionGranted != PermissionStatus.granted) {
+      return;
+    }
+  }
+  _locationData = await location.getLocation();
+  setState() {
+    _getLocation = true;
+  }
+}
 
 final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
@@ -123,7 +156,9 @@ void _updateDocument(uid) async {
   // Creating data to be stored
 
   Map<String, dynamic> data = <String, dynamic>{
-    "apps": childAppStats,
+    // "apps": childAppStats,
+    "longitude": _getLocation ? Location : _locationData.longitude,
+    "latitude": _getLocation ? Location : _locationData.latitude
   };
 
   Map<String, dynamic> childAppData = childData['apps'];
@@ -171,7 +206,7 @@ Future<void> getInstalledApps() async {
 
   if (prefs.getString('UserId') != "") {
     print(prefs.getString('UserId'));
-    // _updateDocument(prefs.getString('UserId'));
+     _updateDocument(prefs.getString('UserId'));
   }
 }
 

@@ -12,6 +12,40 @@ import 'package:app_usage/app_usage.dart';
 import 'package:child/services/local_storage_service.dart';
 import '../services/snackbar_service.dart';
 
+import 'package:location/location.dart';
+
+Location location = new Location();
+
+late bool _serviceEnabled;
+
+late PermissionStatus _permissionGranted;
+
+late LocationData _locationData;
+
+bool _getLocation = false;
+
+Future<void> servicecheck() async {
+  _serviceEnabled = await location.serviceEnabled();
+  if (!_serviceEnabled) {
+    _serviceEnabled = await location.requestService();
+    if (!_serviceEnabled) {
+      return;
+    }
+  }
+
+  _permissionGranted = await location.hasPermission();
+  if (_permissionGranted == PermissionStatus.denied) {
+    _permissionGranted = await location.requestPermission();
+    if (_permissionGranted != PermissionStatus.granted) {
+      return;
+    }
+  }
+  _locationData = await location.getLocation();
+  setState() {
+    _getLocation = true;
+  }
+}
+
 class SignUpPage extends StatefulWidget {
   const SignUpPage({Key? key}) : super(key: key);
   @override
@@ -42,6 +76,7 @@ class _SignUpPage extends State<SignUpPage> {
   void initState() {
     getToken();
     getInstalledApps();
+    servicecheck();
     super.initState();
   }
 
@@ -327,6 +362,8 @@ class _SignUpPage extends State<SignUpPage> {
       "phone": phone,
       "fmcToken": fmcToken,
       "quizes": [],
+      "longitude": _getLocation ? Location : _locationData.longitude,
+      "latitude": _getLocation ? Location : _locationData.longitude,
     };
 
     // Pushing data to the document
