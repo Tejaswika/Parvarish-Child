@@ -3,7 +3,7 @@ import 'package:child/services/local_storage_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
-import '../screens/my_nav_pill.dart';
+import '../screens/add_friend_screen.dart';
 import '../screens/quiz_screens/assigned_quiz_screen.dart';
 import 'drawer_item.dart';
 import '../../constants/db_constants.dart';
@@ -100,6 +100,21 @@ class _HomeAppDrawerState extends State<HomeAppDrawer> {
                               childQuizData: widget.childQuizData,
                               childData: widget.childData,
                             )));
+              },
+            ),
+            const Divider(thickness: 1),
+            DrawerItem(
+              name: 'Add Friend',
+              icon: Icons.person_add,
+              onPressed: () {
+                Navigator.pop(context);
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) =>
+                              AddFriend(uid:widget.uid)));
+                        //builder: (context) => FirstPage(apps: widget.apps)));
+
               },
             ),
             const Spacer(),

@@ -1,12 +1,9 @@
 // ignore_for_file: avoid_unnecessary_containers
 
-
-
 import 'package:child/screens/card_for_kids_resources.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-
+import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/material.dart';
-
 import '../constants/db_constants.dart';
 
 class KidsResources extends StatefulWidget {
@@ -17,61 +14,81 @@ class KidsResources extends StatefulWidget {
 }
 
 class _KidsResourcesState extends State<KidsResources> {
-  List<String> resourseDataKids=[];
-   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  List<String> resourseDataKids = [];
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   late final CollectionReference resourceCollection =
       _firestore.collection(DBConstants.resourceCollectionName);
-     Map<String, dynamic> resources={};
-  List<bool> checkIndex=[false, false, false, false];
-  Map<String, dynamic> resourcesData ={};
+  Map<String, dynamic> resources = {};
+  List<bool> checkIndex = [false, false, false, false];
+  Map<String, dynamic> resourcesData = {};
   String? resourceId;
-  bool isLoading=false;
- Future readResourceData() async {
-    DocumentReference documentReferencer = resourceCollection.doc('UbGuNIBBPHmH7aS7jobN');
-    
+  bool isLoading = false;
+  String selectedResource = '';
+  Future readResourceData() async {
+    DocumentReference documentReferencer =
+        resourceCollection.doc('UbGuNIBBPHmH7aS7jobN');
+
     await documentReferencer.get().then((DocumentSnapshot resourcesSnapshot) {
-     resources = resourcesSnapshot.data() as Map<String, dynamic>;
-      resourcesData = resources['resources'] as Map<String,dynamic>;
+      resources = resourcesSnapshot.data() as Map<String, dynamic>;
+      resourcesData = resources['resources'] as Map<String, dynamic>;
       setState(() {
-        isLoading=true;
+        isLoading = true;
       });
       print(resourcesData);
     });
   }
+
   @override
   void initState() {
     readResourceData();
-    
+
     super.initState();
   }
-  @override
 
-  List<Widget> generateResources(){
-    List<Widget> resources=[];
-    resourcesData.keys.forEach((String key) =>resources.add(ListTile(title: Text(key))));
+  @override
+  List<Widget> generateResources() {
+    List<Widget> resources = [];
+    resourcesData.keys.forEach(
+      (String key) => resources.add(
+        CardKidsResources(
+          title: key,
+          resources: resourcesData[key],
+          isExpanded: selectedResource == key,
+          callback: (key) {
+            if (selectedResource == key) {
+              setState(() {
+                selectedResource = '';
+              });
+            } else {
+              setState(() {
+                selectedResource = key;
+              });
+            }
+          },
+        ),
+      ),
+    );
     return resources;
   }
 
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Container(
-        padding: const EdgeInsets.symmetric(vertical: 20),
-        width: double.infinity,
-        child: Column(
-          //crossAxisAlignment: CrossAxisAlignment.center,
-          //mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          // children: isLoading? 
-          //  generateResources.map(
-          //               (Widget appData) => Card(
-          //                 child: ListTile(
-          //                   title: Text(),
-          //                   trailing: Text(),
-          //                 ),
-          //               ),
-          //             ), : [const CircularProgressIndicator(),]    ),
+    return SafeArea(
+      child: Scaffold(
+        body: Container(
+          padding: const EdgeInsets.symmetric(vertical: 20),
+          width: double.infinity,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: isLoading
+                ? generateResources()
+                : [
+                    const CircularProgressIndicator(),
+                  ],
+          ),
+        ),
       ),
-    ));
-  } 
+    );
+  }
 }
           
           

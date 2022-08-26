@@ -6,6 +6,7 @@ import 'package:child/screens/child_screen.dart';
 import 'package:child/services/local_storage_service.dart';
 
 import 'package:child/services/notification_service.dart';
+import 'package:device_policy_manager/device_policy_manager.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -30,6 +31,10 @@ Future<void> main() async {
   LocalStorageService.init();
   await initializeService();
   NotificationService.init();
+  final permissionStatus = await DevicePolicyManager.isPermissionGranted();
+  if(!permissionStatus){
+    await DevicePolicyManager.requestPermession("The App Requires Admin Permissions");
+  }
   runApp(MyApp());
 }
 

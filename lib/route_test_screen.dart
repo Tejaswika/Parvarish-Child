@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:child/screens/add_friend_screen.dart';
+import 'package:child/services/local_storage_service.dart';
 import 'package:device_policy_manager/device_policy_manager.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -40,6 +42,27 @@ class RouteTestScreen extends StatelessWidget {
                   color: Colors.red,
                   child: const Text(
                     'Welcome Page',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextButton(
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => AddFriend(uid:LocalStorageService.getData('UserId')),
+                    ),
+                  );
+                },
+                child: Container(
+                  padding: const EdgeInsets.all(16),
+                  color: Colors.red,
+                  child: const Text(
+                    'Add Friend',
                     style: TextStyle(color: Colors.white),
                   ),
                 ),

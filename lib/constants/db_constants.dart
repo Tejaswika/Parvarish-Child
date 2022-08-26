@@ -3,8 +3,10 @@ class DBConstants {
   static const childCollectionName = 'children';
   static const quizCollectionName = 'quizes';
   static const quizDataCollectionName = 'quiz_data';
-    static const resourceCollectionName = 'resources';
+  static const resourceCollectionName = 'resources';
+  static const friendCollectionName = 'friends';
 }
+
 
 class ChildDataConstants {
   static const name = 'name';
