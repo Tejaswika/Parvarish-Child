@@ -1,3 +1,4 @@
+import 'package:child/screens/siblings_leaderboard.dart';
 import 'package:child/screens/kids_resources.dart';
 import 'package:flutter/material.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
@@ -42,18 +43,35 @@ class ScreenTimeReportState extends State<ScreenTimeReport> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   late final CollectionReference _childCollection =
       _firestore.collection(DBConstants.childCollectionName);
+  late final CollectionReference _parentCollection =
+      _firestore.collection(DBConstants.parentCollectionName);
 // ignore: non_constant_identifier_names
   Map<String, dynamic>? AppUsagechildData;
+  Map<String, dynamic>? parentData;
+
   Map<String, dynamic>? apps;
+  String? parentId;
   bool _loading = true;
 
   Future readchildData(uid) async {
     DocumentReference documentReferencer = _childCollection.doc(uid);
     await documentReferencer.get().then((DocumentSnapshot childDataSnapshot) {
       AppUsagechildData = childDataSnapshot.data() as Map<String, dynamic>;
+      parentId=AppUsagechildData!['parent_id'];
       apps = AppUsagechildData!['apps'];
+       
       graphData();
     });
+     DocumentReference documentReferencers = _parentCollection.doc(parentId);
+    await documentReferencers.get().then((DocumentSnapshot parentDataSnapshot) {
+      parentData = parentDataSnapshot.data() as Map<String, dynamic>;
+      
+      
+    
+    });
+    print(parentId);
+    print(parentData);
+  
   }
 
   void graphData() {
@@ -239,6 +257,23 @@ class ScreenTimeReportState extends State<ScreenTimeReport> {
                                           TimeScreen(UID: widget.UID)));
                             },
                           ),
+                        ],
+                      ),
+                    ),
+
+                    Container(
+                      child: ListView(
+                        shrinkWrap: true,
+                        children: <Widget>[ ListTile(
+                          leading: const Icon(Icons.lock_clock),
+                          title: const Text('Siblings Leaderboard'),
+                          onTap: () {
+                            Navigator.of(context, rootNavigator: true).push(
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        LeaderboardScreen(parentData: parentData)));
+                          },
+                            ),
                         ],
                       ),
                     )
